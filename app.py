@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 
-# 1. Swiftly aligned to perfectly match image_eef023.png
+# 1. Define the Sweepstake Pools exactly as drawn
 SWEEPSTAKE_POOLS = {
     "Nick": ["England", "Mexico", "Morocco", "Australia", "Egypt", "Scotland", "South Africa", "Iraq"],
     "Kate": ["France", "Brazil", "Uruguay", "Japan", "Algeria", "Ivory Coast", "Uzbekistan", "Haiti"],
@@ -12,12 +12,12 @@ SWEEPSTAKE_POOLS = {
 }
 
 FLAG_MAPPING = {
-    "England": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Mexico": "🇲🇽", "Morocco": "🇲🇦", "Australia": "🇦🇺", "Egypt": "🇪🇬", "Scotland": "🏴 *Scotland*", "South Africa": "🇿🇦", "Iraq": "🇮🇶",
+    "England": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Mexico": "🇲🇽", "Morocco": "🇲🇦", "Australia": "🇦🇺", "Egypt": "🇪🇬", "Scotland": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "South Africa": "🇿🇦", "Iraq": "🇮🇶",
     "France": "🇫🇷", "Brazil": "🇧🇷", "Uruguay": "🇺🇾", "Japan": "🇯🇵", "Algeria": "🇩🇿", "Ivory Coast": "🇨🇮", "Uzbekistan": "🇺🇿", "Haiti": "🇭🇹",
     "Spain": "🇪🇸", "United States": "🇺🇸", "Colombia": "🇨🇴", "Ecuador": "🇪🇨", "Norway": "🇳🇴", "Panama": "🇵🇦", "Jordan": "🇯🇴", "Cape Verde": "🇨🇻",
     "Argentina": "🇦🇷", "Germany": "🇩🇪", "Croatia": "🇭🇷", "Iran": "🇮🇷", "Canada": "🇨🇦", "Paraguay": "🇵🇾", "Qatar": "🇶🇦", "New Zealand": "🇳🇿",
     "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼",
-    "Bosnia": "🇧🇦", "Türkiye": "🇹🇷", "Netherlands": "🇳🇱", "Sweden": "🇸🇪", "Senegal": "🇸🇳"
+    "Bosnia": "🇧🇦", "Türkiye": "🇹🇷", "Netherlands": "🇳🇱", "Sweden": "🇸🇪", "Senegal": "🇸🇳", "Czechia": "🇨🇿"
 }
 
 FIXTURES_BY_DAY = {
@@ -58,9 +58,14 @@ FIXTURES_BY_DAY = {
     ]
 }
 
-# Free cloud storage simulation via Streamlit Session State
-if "cloud_db" not in st.session_state:
-    st.session_state.cloud_db = {}
+# Connect to Streamlit's built-in cloud storage database
+db = st.connection("kv", type="dict")
+
+# Initialize cloud database storage if empty
+if "scores" not in db:
+    db["scores"] = {}
+
+saved_scores = db["scores"]
 
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="🏆", layout="wide")
 st.title("🏆 Bartman Family World Cup Sweepstake Live Scoreboard")
@@ -68,11 +73,10 @@ st.title("🏆 Bartman Family World Cup Sweepstake Live Scoreboard")
 # 2. Secure Sidebar Control Lock
 st.sidebar.header("🔐 Admin Dashboard")
 password = st.sidebar.text_input("Enter Admin Password to Log Scores", type="password")
-is_admin = (password == "wimbledon2026") # You can change this secret password phrase right here
+is_admin = (password == "wimbledon2026")
 
 match_scores = {}
 
-# Admin View: Render match input toggles
 if is_admin:
     st.sidebar.success("Access Granted! Update scores below:")
     for match_date, match_list in FIXTURES_BY_DAY.items():
@@ -82,8 +86,8 @@ if is_admin:
             h_team = match["home"]
             a_team = match["away"]
             
-            default_home = st.session_state.cloud_db.get(m_id, {}).get("home_score", "-")
-            default_away = st.session_state.cloud_db.get(m_id, {}).get("away_score", "-")
+            default_home = saved_scores.get(m_id, {}).get("home_score", "-")
+            default_away = saved_scores.get(m_id, {}).get("away_score", "-")
             
             options = ["-", "0", "1", "2", "3", "4", "5", "6"]
             idx_h = options.index(default_home) if default_home in options else 0
@@ -105,14 +109,13 @@ if is_admin:
                 
             match_scores[m_id] = {"home_team": h_team, "away_team": a_team, "home_score": h_g, "away_score": a_g}
     
-    if st.sidebar.button("💾 Save & Publish Scores", use_container_width=True):
-        st.session_state.cloud_db = match_scores
-        st.sidebar.success("Scoreboard Updated Online!")
+    if st.sidebar.button("💾 Save & Publish Scores Online", use_container_width=True):
+        db["scores"] = match_scores
+        st.sidebar.success("Global Scoreboard Updated Online!")
         st.rerun()
 else:
     st.sidebar.info("Family View: Keeping track live! Input fields are locked out.")
-    # Fallback to current memory matrix
-    match_scores = st.session_state.cloud_db
+    match_scores = saved_scores
 
 # 3. Calculate Standings
 stats = {name: {"Wins": 0, "Draws": 0, "Points": 0} for name in SWEEPSTAKE_POOLS}
@@ -144,7 +147,7 @@ for participant, team_list in SWEEPSTAKE_POOLS.items():
             stats[participant]["Draws"] += 1
             stats[participant]["Points"] += 1
 
-# 4. Main Page Display Output Matrices
+# 4. Render Table Standings
 df = pd.DataFrame.from_dict(stats, orient="index").reset_index()
 df.columns = ["Participant", "Wins", "Draws", "Total Points"]
 df = df.sort_values(by=["Total Points", "Wins"], ascending=False).reset_index(drop=True)
