@@ -1,0 +1,165 @@
+import streamlit as st
+import pandas as pd
+import json
+
+# 1. Swiftly aligned to perfectly match image_eef023.png
+SWEEPSTAKE_POOLS = {
+    "Nick": ["England", "Mexico", "Morocco", "Australia", "Egypt", "Scotland", "South Africa", "Iraq"],
+    "Kate": ["France", "Brazil", "Uruguay", "Japan", "Algeria", "Ivory Coast", "Uzbekistan", "Haiti"],
+    "Florence": ["Spain", "United States", "Colombia", "Ecuador", "Norway", "Panama", "Jordan", "Cape Verde"],
+    "Annabel": ["Argentina", "Germany", "Croatia", "Iran", "Canada", "Paraguay", "Qatar", "New Zealand"],
+    "Edward": ["Portugal", "Belgium", "Switzerland", "South Korea", "Austria", "Tunisia", "Saudi Arabia", "Curaçao"]
+}
+
+FLAG_MAPPING = {
+    "England": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Mexico": "🇲🇽", "Morocco": "🇲🇦", "Australia": "🇦🇺", "Egypt": "🇪🇬", "Scotland": "🏴 *Scotland*", "South Africa": "🇿🇦", "Iraq": "🇮🇶",
+    "France": "🇫🇷", "Brazil": "🇧🇷", "Uruguay": "🇺🇾", "Japan": "🇯🇵", "Algeria": "🇩🇿", "Ivory Coast": "🇨🇮", "Uzbekistan": "🇺🇿", "Haiti": "🇭🇹",
+    "Spain": "🇪🇸", "United States": "🇺🇸", "Colombia": "🇨🇴", "Ecuador": "🇪🇨", "Norway": "🇳🇴", "Panama": "🇵🇦", "Jordan": "🇯🇴", "Cape Verde": "🇨🇻",
+    "Argentina": "🇦🇷", "Germany": "🇩🇪", "Croatia": "🇭🇷", "Iran": "🇮🇷", "Canada": "🇨🇦", "Paraguay": "🇵🇾", "Qatar": "🇶🇦", "New Zealand": "🇳🇿",
+    "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼",
+    "Bosnia": "🇧🇦", "Türkiye": "🇹🇷", "Netherlands": "🇳🇱", "Sweden": "🇸🇪", "Senegal": "🇸🇳"
+}
+
+FIXTURES_BY_DAY = {
+    "Thursday, June 11": [{"id": "m1", "home": "Mexico", "away": "South Africa", "time": "19:00"}],
+    "Friday, June 12": [
+        {"id": "m2", "home": "South Korea", "away": "Czechia", "time": "02:00"},
+        {"id": "m3", "home": "Canada", "away": "Bosnia", "time": "19:00"}
+    ],
+    "Saturday, June 13": [
+        {"id": "m4", "home": "United States", "away": "Paraguay", "time": "01:00"},
+        {"id": "m5", "home": "Qatar", "away": "Switzerland", "time": "19:00"},
+        {"id": "m6", "home": "Brazil", "away": "Morocco", "time": "22:00"}
+    ],
+    "Sunday, June 14": [
+        {"id": "m7", "home": "Haiti", "away": "Scotland", "time": "01:00"},
+        {"id": "m8", "home": "Australia", "away": "Türkiye", "time": "04:00"},
+        {"id": "m9", "home": "Germany", "away": "Curaçao", "time": "17:00"},
+        {"id": "m10", "home": "Netherlands", "away": "Japan", "time": "20:00"},
+        {"id": "m11", "home": "Ivory Coast", "away": "Ecuador", "time": "23:00"}
+    ],
+    "Monday, June 15": [
+        {"id": "m12", "home": "Sweden", "away": "Tunisia", "time": "02:00"},
+        {"id": "m13", "home": "Spain", "away": "Cape Verde", "time": "16:00"},
+        {"id": "m14", "home": "Belgium", "away": "Egypt", "time": "19:00"},
+        {"id": "m15", "home": "Saudi Arabia", "away": "Uruguay", "time": "22:00"}
+    ],
+    "Tuesday, June 16": [
+        {"id": "m16", "home": "Iran", "away": "New Zealand", "time": "01:00"},
+        {"id": "m17", "home": "France", "away": "Senegal", "time": "19:00"},
+        {"id": "m18", "home": "Iraq", "away": "Norway", "time": "22:00"}
+    ],
+    "Wednesday, June 17": [
+        {"id": "m19", "home": "Argentina", "away": "Algeria", "time": "01:00"},
+        {"id": "m20", "home": "Austria", "away": "Jordan", "time": "04:00"},
+        {"id": "m21", "home": "Portugal", "away": "DR Congo", "time": "17:00"},
+        {"id": "m22", "home": "England", "away": "Croatia", "time": "20:00"},
+        {"id": "m23", "home": "Ghana", "away": "Panama", "time": "23:00"}
+    ]
+}
+
+# Free cloud storage simulation via Streamlit Session State
+if "cloud_db" not in st.session_state:
+    st.session_state.cloud_db = {}
+
+st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="🏆", layout="wide")
+st.title("🏆 Bartman Family World Cup Sweepstake Live Scoreboard")
+
+# 2. Secure Sidebar Control Lock
+st.sidebar.header("🔐 Admin Dashboard")
+password = st.sidebar.text_input("Enter Admin Password to Log Scores", type="password")
+is_admin = (password == "wimbledon2026") # You can change this secret password phrase right here
+
+match_scores = {}
+
+# Admin View: Render match input toggles
+if is_admin:
+    st.sidebar.success("Access Granted! Update scores below:")
+    for match_date, match_list in FIXTURES_BY_DAY.items():
+        st.sidebar.markdown(f"### 📅 {match_date}")
+        for match in match_list:
+            m_id = match["id"]
+            h_team = match["home"]
+            a_team = match["away"]
+            
+            default_home = st.session_state.cloud_db.get(m_id, {}).get("home_score", "-")
+            default_away = st.session_state.cloud_db.get(m_id, {}).get("away_score", "-")
+            
+            options = ["-", "0", "1", "2", "3", "4", "5", "6"]
+            idx_h = options.index(default_home) if default_home in options else 0
+            idx_a = options.index(default_away) if default_away in options else 0
+            
+            st.sidebar.caption(f"⏰ Kickoff: **{match['time']} BST**")
+            col_h_name, col_h_score, col_vs, col_a_score, col_a_name = st.sidebar.columns([3, 2, 1, 2, 3])
+            
+            with col_h_name:
+                st.markdown(f"<p style='text-align: right; margin-top:5px;'>{FLAG_MAPPING.get(h_team, '🏳️')} {h_team}</p>", unsafe_allow_html=True)
+            with col_h_score:
+                h_g = st.selectbox("", options=options, index=idx_h, key=f"h_{m_id}", label_visibility="collapsed")
+            with col_vs:
+                st.markdown("<p style='text-align: center; margin-top:5px;'>v</p>", unsafe_allow_html=True)
+            with col_a_score:
+                a_g = st.selectbox("", options=options, index=idx_a, key=f"a_{m_id}", label_visibility="collapsed")
+            with col_a_name:
+                st.markdown(f"<p style='text-align: left; margin-top:5px;'>{a_team} {FLAG_MAPPING.get(a_team, '🏳️')}</p>", unsafe_allow_html=True)
+                
+            match_scores[m_id] = {"home_team": h_team, "away_team": a_team, "home_score": h_g, "away_score": a_g}
+    
+    if st.sidebar.button("💾 Save & Publish Scores", use_container_width=True):
+        st.session_state.cloud_db = match_scores
+        st.sidebar.success("Scoreboard Updated Online!")
+        st.rerun()
+else:
+    st.sidebar.info("Family View: Keeping track live! Input fields are locked out.")
+    # Fallback to current memory matrix
+    match_scores = st.session_state.cloud_db
+
+# 3. Calculate Standings
+stats = {name: {"Wins": 0, "Draws": 0, "Points": 0} for name in SWEEPSTAKE_POOLS}
+team_records = {}
+
+for m_id, score_data in match_scores.items():
+    h_s = score_data.get("home_score", "-")
+    a_s = score_data.get("away_score", "-")
+    
+    if h_s != "-" and a_s != "-":
+        h_goals, a_goals = int(h_s), int(a_s)
+        if h_goals > a_goals:
+            team_records[score_data["home_team"]] = "W"
+            team_records[score_data["away_team"]] = "L"
+        elif a_goals > h_goals:
+            team_records[score_data["home_team"]] = "L"
+            team_records[score_data["away_team"]] = "W"
+        else:
+            team_records[score_data["home_team"]] = "D"
+            team_records[score_data["away_team"]] = "D"
+
+for participant, team_list in SWEEPSTAKE_POOLS.items():
+    for team in team_list:
+        outcome = team_records.get(team)
+        if outcome == "W":
+            stats[participant]["Wins"] += 1
+            stats[participant]["Points"] += 3
+        elif outcome == "D":
+            stats[participant]["Draws"] += 1
+            stats[participant]["Points"] += 1
+
+# 4. Main Page Display Output Matrices
+df = pd.DataFrame.from_dict(stats, orient="index").reset_index()
+df.columns = ["Participant", "Wins", "Draws", "Total Points"]
+df = df.sort_values(by=["Total Points", "Wins"], ascending=False).reset_index(drop=True)
+df.index += 1 
+
+st.subheader("📊 Live League Table Standings")
+st.table(df)
+
+st.subheader("🏃‍♂️ Team Pools Current Performance Tracking")
+cols = st.columns(5)
+for idx, (player, teams) in enumerate(SWEEPSTAKE_POOLS.items()):
+    with cols[idx]:
+        st.markdown(f"### **{player}**")
+        for t in teams:
+            flag = FLAG_MAPPING.get(t, "🏳️")
+            outcome = team_records.get(t)
+            status_text = f" **({outcome})**" if outcome else ""
+            st.markdown(f"{flag} {t}{status_text}")
