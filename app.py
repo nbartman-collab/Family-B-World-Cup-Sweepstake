@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import json
+import os
 
 # 1. Define the Sweepstake Pools exactly as drawn
 SWEEPSTAKE_POOLS = {
@@ -12,12 +13,12 @@ SWEEPSTAKE_POOLS = {
 }
 
 FLAG_MAPPING = {
-    "England": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Mexico": "🇲🇽", "Morocco": "🇲🇦", "Australia": "🇦🇺", "Egypt": "🇪🇬", "Scotland": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "South Africa": "🇿🇦", "Iraq": "🇮🇶",
-    "France": "🇫🇷", "Brazil": "🇧🇷", "Uruguay": "🇺🇾", "Japan": "🇯🇵", "Algeria": "🇩🇿", "Ivory Coast": "🇨🇮", "Uzbekistan": "🇺🇿", "Haiti": "🇭🇹",
-    "Spain": "🇪🇸", "United States": "🇺🇸", "Colombia": "🇨🇴", "Ecuador": "🇪🇨", "Norway": "🇳🇴", "Panama": "🇵🇦", "Jordan": "🇯🇴", "Cape Verde": "🇨🇻",
-    "Argentina": "🇦🇷", "Germany": "🇩🇪", "Croatia": "🇭🇷", "Iran": "🇮🇷", "Canada": "🇨🇦", "Paraguay": "🇵🇾", "Qatar": "🇶🇦", "New Zealand": "🇳🇿",
-    "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼",
-    "Bosnia": "🇧🇦", "Türkiye": "🇹🇷", "Netherlands": "🇳🇱", "Sweden": "🇸🇪", "Senegal": "🇸🇳", "Czechia": "🇨🇿"
+    "England": "🏴 *England*", "Mexico": "🇲🇽 *Mexico*", "Morocco": "🇲🇦 *Morocco*", "Australia": "🇦🇺 *Australia*", "Egypt": "🇪🇬 *Egypt*", "Scotland": "🏴 *Scotland*", "South Africa": "🇿🇦 *South Africa*", "Iraq": "🇮🇶 *Iraq*",
+    "France": "🇫🇷 *France*", "Brazil": "🇧🇷 *Brazil*", "Uruguay": "🇺🇾 *Uruguay*", "Japan": "🇯🇵 *Japan*", "Algeria": "🇩🇿 *Algeria*", "Ivory Coast": "🇨🇮 *Ivory Coast*", "Uzbekistan": "🇺🇿 *Uzbekistan*", "Haiti": "🇭🇹 *Haiti*",
+    "Spain": "🇪🇸 *Spain*", "United States": "🇺🇸 *United States*", "Colombia": "🇨🇴 *Colombia*", "Ecuador": "🇪🇨 *Ecuador*", "Norway": "🇳🇴 *Norway*", "Panama": "🇵🇦 *Panama*", "Jordan": "🇯🇴 *Jordan*", "Cape Verde": "🇨🇻 *Cape Verde*",
+    "Argentina": "🇦🇷 *Argentina*", "Germany": "🇩🇪 *Germany*", "Croatia": "🇭🇷 *Croatia*", "Iran": "🇮🇷 *Iran*", "Canada": "🇨🇦 *Canada*", "Paraguay": "🇵🇾 *Paraguay*", "Qatar": "🇶🇦 *Qatar*", "New Zealand": "🇳🇿 *New Zealand*",
+    "Portugal": "🇵🇹 *Portugal*", "Belgium": "🇧🇪 *Belgium*", "Switzerland": "🇨🇭 *Switzerland*", "South Korea": "🇰🇷 *South Korea*", "Austria": "🇦🇹 *Austria*", "Tunisia": "🇹🇳 *Tunisia*", "Saudi Arabia": "🇸🇦 *Saudi Arabia*", "Curaçao": "🇨🇼 *Curaçao*",
+    "Bosnia": "🇧🇦 *Bosnia*", "Türkiye": "🇹🇷 *Türkiye*", "Netherlands": "🇳🇱 *Netherlands*", "Sweden": "🇸🇪 *Sweden*", "Senegal": "🇸🇳 *Senegal*", "Czechia": "🇨🇿 *Czechia*", "Iraq": "🇮🇶 *Iraq*", "DR Congo": "🇨🇩 *DR Congo*", "Ghana": "🇬🇭 *Ghana*"
 }
 
 FIXTURES_BY_DAY = {
@@ -58,14 +59,24 @@ FIXTURES_BY_DAY = {
     ]
 }
 
-# Connect to Streamlit's built-in cloud storage database
-db = st.connection("kv", type="dict")
+# Standard persistent filesystem path allocation
+DB_FILE = "online_sweepstake_memory.json"
 
-# Initialize cloud database storage if empty
-if "scores" not in db:
-    db["scores"] = {}
+def load_global_scores():
+    if os.path.exists(DB_FILE):
+        try:
+            with open(DB_FILE, "r") as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
 
-saved_scores = db["scores"]
+def save_global_scores(data):
+    with open(DB_FILE, "w") as f:
+        json.dump(data, f)
+
+# Pull saved database files instantly from central container storage
+saved_scores = load_global_scores()
 
 st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="🏆", layout="wide")
 st.title("🏆 Bartman Family World Cup Sweepstake Live Scoreboard")
@@ -97,7 +108,7 @@ if is_admin:
             col_h_name, col_h_score, col_vs, col_a_score, col_a_name = st.sidebar.columns([3, 2, 1, 2, 3])
             
             with col_h_name:
-                st.markdown(f"<p style='text-align: right; margin-top:5px;'>{FLAG_MAPPING.get(h_team, '🏳️')} {h_team}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: right; margin-top:5px;'>{h_team}</p>", unsafe_allow_html=True)
             with col_h_score:
                 h_g = st.selectbox("", options=options, index=idx_h, key=f"h_{m_id}", label_visibility="collapsed")
             with col_vs:
@@ -105,13 +116,13 @@ if is_admin:
             with col_a_score:
                 a_g = st.selectbox("", options=options, index=idx_a, key=f"a_{m_id}", label_visibility="collapsed")
             with col_a_name:
-                st.markdown(f"<p style='text-align: left; margin-top:5px;'>{a_team} {FLAG_MAPPING.get(a_team, '🏳️')}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='text-align: left; margin-top:5px;'>{a_team}</p>", unsafe_allow_html=True)
                 
             match_scores[m_id] = {"home_team": h_team, "away_team": a_team, "home_score": h_g, "away_score": a_g}
     
     if st.sidebar.button("💾 Save & Publish Scores Online", use_container_width=True):
-        db["scores"] = match_scores
-        st.sidebar.success("Global Scoreboard Updated Online!")
+        save_global_scores(match_scores)
+        st.sidebar.success("Global Scoreboard Updated!")
         st.rerun()
 else:
     st.sidebar.info("Family View: Keeping track live! Input fields are locked out.")
@@ -162,7 +173,7 @@ for idx, (player, teams) in enumerate(SWEEPSTAKE_POOLS.items()):
     with cols[idx]:
         st.markdown(f"### **{player}**")
         for t in teams:
-            flag = FLAG_MAPPING.get(t, "🏳️")
+            flag = FLAG_MAPPING.get(t, t)
             outcome = team_records.get(t)
             status_text = f" **({outcome})**" if outcome else ""
-            st.markdown(f"{flag} {t}{status_text}")
+            st.markdown(f"• {flag}{status_text}")
