@@ -149,8 +149,8 @@ else:
     st.sidebar.info("Family View: Keeping track live! Input fields are locked out.")
     match_scores = saved_scores
 
-# Calculate Standings (Updated to include Losses tracking)
-stats = {name: {"Wins": 0, "Draws": 0, "Losses": 0, "Points": 0} for name in SWEEPSTAKE_POOLS}
+# Calculate Standings (Updated to include Played and Losses tracking)
+stats = {name: {"Played": 0, "Wins": 0, "Draws": 0, "Losses": 0, "Points": 0} for name in SWEEPSTAKE_POOLS}
 team_records = {}
 
 for m_id, score_data in match_scores.items():
@@ -179,11 +179,14 @@ for participant, team_list in SWEEPSTAKE_POOLS.items():
             stats[participant]["Draws"] += 1
             stats[participant]["Points"] += 1
         elif outcome == "L":
-            stats[participant]["Losses"] += 1  # Add 1 to losses, 0 points added
+            stats[participant]["Losses"] += 1
+        
+    # Total Played is simply the sum of a participant's individual match outcomes
+    stats[participant]["Played"] = stats[participant]["Wins"] + stats[participant]["Draws"] + stats[participant]["Losses"]
 
-# Render Table Standings (Updated to include the new Losses column)
+# Render Table Standings (Ordered: Participant -> Played -> Wins -> Draws -> Losses -> Total Points)
 df = pd.DataFrame.from_dict(stats, orient="index").reset_index()
-df.columns = ["Participant", "Wins", "Draws", "Losses", "Total Points"]
+df.columns = ["Participant", "Played", "Wins", "Draws", "Losses", "Total Points"]
 df = df.sort_values(by=["Total Points", "Wins"], ascending=False).reset_index(drop=True)
 df.index += 1 
 
