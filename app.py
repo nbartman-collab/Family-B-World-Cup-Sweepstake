@@ -94,7 +94,6 @@ FIXTURES_BY_DAY = {
         {"id": "m45", "home": "Panama", "away": "England", "time": "22:00"}
     ]
 }
-}
 
 # Standard persistent filesystem path allocation
 DB_FILE = "online_sweepstake_memory.json"
