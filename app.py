@@ -56,8 +56,7 @@ FIXTURES_BY_DAY = {
         {"id": "m21", "home": "Portugal", "away": "DR Congo", "time": "17:00"},
         {"id": "m22", "home": "England", "away": "Croatia", "time": "20:00"},
         {"id": "m23", "home": "Ghana", "away": "Panama", "time": "23:00"}
-    ]
-    FIXTURES_BY_DAY = {
+    ],
     "Thursday, June 18": [
         {"id": "m24", "home": "Mexico", "away": "Czechia", "time": "19:00"},
         {"id": "m25", "home": "South Africa", "away": "South Korea", "time": "22:00"}
