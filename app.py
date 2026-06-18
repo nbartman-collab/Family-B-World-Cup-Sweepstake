@@ -149,8 +149,10 @@ else:
     st.sidebar.info("Family View: Keeping track live! Input fields are locked out.")
     match_scores = saved_scores
 
-# Calculate Standings (Updated to include Played and Losses tracking)
+# Calculate Standings (Fixed to accumulate multiple matches per team)
 stats = {name: {"Played": 0, "Wins": 0, "Draws": 0, "Losses": 0, "Points": 0} for name in SWEEPSTAKE_POOLS}
+
+# Change team_records to hold a list of results for each country
 team_records = {}
 
 for m_id, score_data in match_scores.items():
@@ -159,32 +161,41 @@ for m_id, score_data in match_scores.items():
     
     if h_s != "-" and a_s != "-":
         h_goals, a_goals = int(h_s), int(a_s)
+        
+        h_team = score_data["home_team"]
+        a_team = score_data["away_team"]
+        
+        if h_team not in team_records: team_records[h_team] = []
+        if a_team not in team_records: team_records[a_team] = []
+        
         if h_goals > a_goals:
-            team_records[score_data["home_team"]] = "W"
-            team_records[score_data["away_team"]] = "L"
+            team_records[h_team].append("W")
+            team_records[a_team].append("L")
         elif a_goals > h_goals:
-            team_records[score_data["home_team"]] = "L"
-            team_records[score_data["away_team"]] = "W"
+            team_records[h_team].append("L")
+            team_records[a_team].append("W")
         else:
-            team_records[score_data["home_team"]] = "D"
-            team_records[score_data["away_team"]] = "D"
+            team_records[h_team].append("D")
+            team_records[a_team].append("D")
 
 for participant, team_list in SWEEPSTAKE_POOLS.items():
     for team in team_list:
-        outcome = team_records.get(team)
-        if outcome == "W":
-            stats[participant]["Wins"] += 1
-            stats[participant]["Points"] += 3
-        elif outcome == "D":
-            stats[participant]["Draws"] += 1
-            stats[participant]["Points"] += 1
-        elif outcome == "L":
-            stats[participant]["Losses"] += 1
+        # Loop through ALL recorded match outcomes for this country
+        outcomes = team_records.get(team, [])
+        for outcome in outcomes:
+            if outcome == "W":
+                stats[participant]["Wins"] += 1
+                stats[participant]["Points"] += 3
+            elif outcome == "D":
+                stats[participant]["Draws"] += 1
+                stats[participant]["Points"] += 1
+            elif outcome == "L":
+                stats[participant]["Losses"] += 1
         
-    # Total Played is simply the sum of a participant's individual match outcomes
+    # Calculate total played cleanly from accumulated results
     stats[participant]["Played"] = stats[participant]["Wins"] + stats[participant]["Draws"] + stats[participant]["Losses"]
 
-# Render Table Standings (Ordered: Participant -> Played -> Wins -> Draws -> Losses -> Total Points)
+# Render Table Standings
 df = pd.DataFrame.from_dict(stats, orient="index").reset_index()
 df.columns = ["Participant", "Played", "Wins", "Draws", "Losses", "Total Points"]
 df = df.sort_values(by=["Total Points", "Wins"], ascending=False).reset_index(drop=True)
@@ -200,6 +211,6 @@ for idx, (player, teams) in enumerate(SWEEPSTAKE_POOLS.items()):
         st.markdown(f"### **{player}**")
         for t in teams:
             flag = FLAG_MAPPING.get(t, t)
-            outcome = team_records.get(t)
-            status_text = f" **({outcome})**" if outcome else ""
+            outcomes = team_records.get(t, [])
+            status_text = f" **({" ,".join(outcomes)})**" if outcomes else ""
             st.markdown(f"• {flag}{status_text}")
