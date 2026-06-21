@@ -74,9 +74,59 @@ FIXTURES_BY_DAY = {
         {"id": "m33", "home": "Netherlands", "away": "Sweden", "time": "18:00"},
         {"id": "m34", "home": "Germany", "away": "Ivory Coast", "time": "21:00"}
     ],
-    "Sunday, June 21": [
-        {"id": "m35", "home": "Ecuador", "away": "Curaçao", "time": "01:00"},
-        {"id": "m36", "home": "Tunisia", "away": "Japan", "time": "05:00"}
+       "Sunday, June 21": [
+        {"id": "m35a", "home": "Ecuador", "away": "Curaçao", "time": "01:00"},
+        {"id": "m35b", "home": "Tunisia", "away": "Japan", "time": "05:00"},
+        {"id": "m35c", "home": "Spain", "away": "Saudi Arabia", "time": "17:00"},
+        {"id": "m36a", "home": "Belgium", "away": "Iran", "time": "20:00"},
+        {"id": "m36b", "home": "Uruguay", "away": "Cape Verde", "time": "23:00"}
+    ],
+    "Monday, June 22": [
+        {"id": "m37", "home": "New Zealand", "away": "Egypt", "time": "02:00"},
+        {"id": "m38", "home": "Argentina", "away": "Austria", "time": "18:00"},
+        {"id": "m39", "home": "France", "away": "Iraq", "time": "22:00"}
+    ],
+    "Tuesday, June 23": [
+        {"id": "m40", "home": "Norway", "away": "Senegal", "time": "01:00"},
+        {"id": "m41", "home": "Jordan", "away": "Algeria", "time": "04:00"},
+        {"id": "m42", "home": "Portugal", "away": "Uzbekistan", "time": "18:00"},
+        {"id": "m43", "home": "England", "away": "Ghana", "time": "21:00"}
+    ],
+    "Wednesday, June 24": [
+        {"id": "m44", "home": "Panama", "away": "Croatia", "time": "00:00"},
+        {"id": "m45", "home": "Colombia", "away": "DR Congo", "time": "03:00"},
+        {"id": "m46", "home": "Switzerland", "away": "Canada", "time": "20:00"},
+        {"id": "m47", "home": "Bosnia", "away": "Qatar", "time": "20:00"},
+        {"id": "m48", "home": "Morocco", "away": "Haiti", "time": "23:00"},
+        {"id": "m49", "home": "Scotland", "away": "Brazil", "time": "23:00"}
+    ],
+    "Thursday, June 25": [
+        {"id": "m50", "home": "South Africa", "away": "South Korea", "time": "02:00"},
+        {"id": "m51", "home": "Czechia", "away": "Mexico", "time": "02:00"},
+        {"id": "m52", "home": "Curaçao", "away": "Ivory Coast", "time": "21:00"},
+        {"id": "m53", "home": "Ecuador", "away": "Germany", "time": "21:00"}
+    ],
+    "Friday, June 26": [
+        {"id": "m54", "home": "Tunisia", "away": "Netherlands", "time": "00:00"},
+        {"id": "m55", "home": "Japan", "away": "Sweden", "time": "00:00"},
+        {"id": "m56", "home": "Türkiye", "away": "United States", "time": "03:00"},
+        {"id": "m57", "home": "Paraguay", "away": "Australia", "time": "03:00"},
+        {"id": "m58", "home": "Norway", "away": "France", "time": "20:00"},
+        {"id": "m59", "home": "Senegal", "away": "Iraq", "time": "20:00"}
+    ],
+    "Saturday, June 27": [
+        {"id": "m60", "home": "Cape Verde", "away": "Saudi Arabia", "time": "01:00"},
+        {"id": "m61", "home": "Uruguay", "away": "Spain", "time": "01:00"},
+        {"id": "m62", "home": "New Zealand", "away": "Belgium", "time": "04:00"},
+        {"id": "m63", "home": "Egypt", "away": "Iran", "time": "04:00"},
+        {"id": "m64", "home": "Panama", "away": "England", "time": "22:00"},
+        {"id": "m65", "home": "Croatia", "away": "Ghana", "time": "22:00"}
+    ],
+    "Sunday, June 28": [
+        {"id": "m66", "home": "DR Congo", "away": "Uzbekistan", "time": "00:00"},
+        {"id": "m67", "home": "Colombia", "away": "Portugal", "time": "00:00"},
+        {"id": "m68", "home": "Jordan", "away": "Argentina", "time": "03:00"},
+        {"id": "m69", "home": "Algeria", "away": "Austria", "time": "03:00"}
     ]
 }
 
