@@ -133,18 +133,34 @@ FIXTURES_BY_DAY = {
 # Standard persistent filesystem path allocation
 DB_FILE = "online_sweepstake_memory.json"
 
+# --- MASTER SCORE BACKUP (Hardcoded so it NEVER disappears when the app sleeps) ---
+# Paste your backup string inside the quotes below if the server ever resets!
+MASTER_BACKUP_STRING = '{}' 
+
+# Standard backup filesystem path allocation
+DB_FILE = "online_sweepstake_memory.json"
+
 def load_global_scores():
+    # First, try to load any live scores entered during this active server session
     if os.path.exists(DB_FILE):
         try:
             with open(DB_FILE, "r") as f:
-                return json.load(f)
+                live_scores = json.load(f)
+                if live_scores:
+                    return live_scores
         except:
-            return {}
-    return {}
+            pass
+    # If the server just woke up from sleep, fall back to your permanent hardcoded master list
+    try:
+        return json.loads(MASTER_BACKUP_STRING)
+    except:
+        return {}
 
 def save_global_scores(data):
     with open(DB_FILE, "w") as f:
         json.dump(data, f)
+
+saved_scores = load_global_scores()
 
 # Pull saved database files instantly from central container storage
 saved_scores = load_global_scores()
