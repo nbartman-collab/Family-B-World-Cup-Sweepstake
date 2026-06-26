@@ -134,32 +134,31 @@ FIXTURES_BY_DAY = {
 DB_FILE = "online_sweepstake_memory.json"
 
 # --- MASTER SCORE BACKUP (Hardcoded so it NEVER disappears when the app sleeps) ---
-# Paste your backup string inside the quotes below if the server ever resets!
+# Paste your backup text inside the single quotes below if the server ever resets!
 MASTER_BACKUP_STRING = '{}' 
 
-# Standard backup filesystem path allocation
 DB_FILE = "online_sweepstake_memory.json"
 
 def load_global_scores():
-    # First, try to load any live scores entered during this active server session
+    # 1. Try to load live scores from this active session's temporary memory
     if os.path.exists(DB_FILE):
         try:
             with open(DB_FILE, "r") as f:
-                live_scores = json.load(f)
-                if live_scores:
-                    return live_scores
+                live_data = json.load(f)
+                if live_data:
+                    return live_data
         except:
             pass
-    # If the server just woke up from sleep, fall back to your permanent hardcoded master list
+    # 2. If the app just woke up from sleep and wiped the file, fall back to your hardcoded list
     try:
         return json.loads(MASTER_BACKUP_STRING)
     except:
         return {}
 
 def save_global_scores(data):
+    # Save to temporary active memory
     with open(DB_FILE, "w") as f:
         json.dump(data, f)
-
 saved_scores = load_global_scores()
 
 # Pull saved database files instantly from central container storage
@@ -280,3 +279,10 @@ for idx, (player, teams) in enumerate(SWEEPSTAKE_POOLS.items()):
             outcomes = team_records.get(t, [])
             status_text = f" **({" ,".join(outcomes)})**" if outcomes else ""
             st.markdown(f"• {flag}{status_text}")
+
+# Emergency Cloud Backup section for the Admin
+if is_admin:
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("💾 Emergency Cloud Backup")
+    st.sidebar.write("If the server resets, copy this text block and paste it into MASTER_BACKUP_STRING on GitHub:")
+    st.sidebar.code(json.dumps(match_scores))
