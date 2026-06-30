@@ -140,20 +140,26 @@ MASTER_BACKUP_STRING = '{"m1": {"home_team": "Mexico", "away_team": "South Afric
 DB_FILE = "online_sweepstake_memory.json"
 
 def load_global_scores():
-    # 1. Try to load live scores from this active session's temporary memory
+    # 1. Check if the file exists and actually has data in it
     if os.path.exists(DB_FILE):
         try:
             with open(DB_FILE, "r") as f:
                 live_data = json.load(f)
-                if live_data:
+                # If the file has valid match entries, use them!
+                if live_data and any(v.get("home_score") != "-" for v in live_data.values()):
                     return live_data
         except:
             pass
-    # 2. If the app just woke up from sleep and wiped the file, fall back to your hardcoded list
+
+    # 2. If the file is completely empty or missing, read your Master Backup String instead
     try:
-        return json.loads(MASTER_BACKUP_STRING)
+        backup_data = json.loads(MASTER_BACKUP_STRING)
+        if backup_data:
+            return backup_data
     except:
-        return {}
+        pass
+        
+    return {}
 
 def save_global_scores(data):
     # Save to temporary active memory
