@@ -202,6 +202,7 @@ match_scores = {
     "m65": {"home_team": "Croatia", "away_team": "Ghana", "home_score": "2", "away_score": "1"}, 
     "m66": {"home_team": "-", "away_team": "-", "home_score": "-", "away_score": "-"}, 
     "m67": {"home_team": "-", "away_team": "-", "home_score": "-", "away_score": "-"},def save_global_scores(data):
+   
     # Save to temporary active memory
     with open(DB_FILE, "w") as f:
         json.dump(data, f)
