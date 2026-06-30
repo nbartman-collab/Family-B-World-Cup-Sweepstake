@@ -140,18 +140,17 @@ MASTER_BACKUP_STRING = '{"m1": {"home_team": "Mexico", "away_team": "South Afric
 DB_FILE = "online_sweepstake_memory.json"
 
 def load_global_scores():
-    # 1. Check if the file exists and actually has data in it
-    if os.path.exists(DB_FILE):
-        try:
-            with open(DB_FILE, "r") as f:
-                live_data = json.load(f)
-                # If the file has valid match entries, use them!
-                if live_data and any(v.get("home_score") != "-" for v in live_data.values()):
-                    return live_data
-        except:
-            pass
+    # TEMPORARILY COMMENTED OUT TO FORCE BACKUP READING:
+    # if os.path.exists(DB_FILE):
+    #     try:
+    #         with open(DB_FILE, "r") as f:
+    #             live_data = json.load(f)
+    #             if live_data and any(v.get("home_score") != "-" for v in live_data.values()):
+    #                 return live_data
+    #     except:
+    #         pass
 
-    # 2. If the file is completely empty or missing, read your Master Backup String instead
+    # 2. Force read your Master Backup String instead
     try:
         backup_data = json.loads(MASTER_BACKUP_STRING)
         if backup_data:
@@ -160,7 +159,7 @@ def load_global_scores():
         pass
         
     return {}
-
+    
 def save_global_scores(data):
     # Save to temporary active memory
     with open(DB_FILE, "w") as f:
