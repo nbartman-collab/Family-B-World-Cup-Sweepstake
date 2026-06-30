@@ -140,17 +140,7 @@ MASTER_BACKUP_STRING = '{"m1": {"home_team": "Mexico", "away_team": "South Afric
 DB_FILE = "online_sweepstake_memory.json"
 
 def load_global_scores():
-    # TEMPORARILY COMMENTED OUT TO FORCE BACKUP READING:
-    # if os.path.exists(DB_FILE):
-    #     try:
-    #         with open(DB_FILE, "r") as f:
-    #             live_data = json.load(f)
-    #             if live_data and any(v.get("home_score") != "-" for v in live_data.values()):
-    #                 return live_data
-    #     except:
-    #         pass
-
-    # 2. Force read your Master Backup String instead
+    # DIRECT OVERRIDE: Force the app to read ONLY from the permanent GitHub backup string
     try:
         backup_data = json.loads(MASTER_BACKUP_STRING)
         if backup_data:
@@ -158,6 +148,14 @@ def load_global_scores():
     except:
         pass
         
+    # Fallback to file only if backup fails to parse
+    if os.path.exists(DB_FILE):
+        try:
+            with open(DB_FILE, "r") as f:
+                return json.load(f)
+        except:
+            pass
+            
     return {}
     
 def save_global_scores(data):
