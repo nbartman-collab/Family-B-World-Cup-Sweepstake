@@ -123,6 +123,7 @@ match_scores = {
     "m63": {"home_team": "Egypt", "away_team": "Iran", "home_score": "1", "away_score": "1"},
     "m64": {"home_team": "Panama", "away_team": "England", "home_score": "0", "away_score": "2"},
     "m65": {"home_team": "Croatia", "away_team": "Ghana", "home_score": "2", "away_score": "1"},
+    "m66": {"home_team": "Austria", "away_team": "Algeria", "home_score": "3", "away_score": "3"},
     "m67": {"home_team": "Colombia", "away_team": "Portugal", "home_score": "0", "away_score": "0"},
     "m68": {"home_team": "Jordan", "away_team": "Argentina", "home_score": "1", "away_score": "3"},
     "m70": {"home_team": "South Africa", "away_team": "Canada", "home_score": "0", "away_score": "1"},
@@ -131,8 +132,8 @@ match_scores = {
     "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"}
 }
 
-# --- IMPORTANT STEP: Force file clear cascade to rewrite storage cleanly on boot ---
-DB_FILE = "online_sweepstake_v3.json"
+# Bumped version to v4 to clear the server layer cache and apply updates
+DB_FILE = "online_sweepstake_v4.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
