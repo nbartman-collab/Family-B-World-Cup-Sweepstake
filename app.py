@@ -123,14 +123,16 @@ match_scores = {
     "m63": {"home_team": "Egypt", "away_team": "Iran", "home_score": "1", "away_score": "1"},
     "m64": {"home_team": "Panama", "away_team": "England", "home_score": "0", "away_score": "2"},
     "m65": {"home_team": "Croatia", "away_team": "Ghana", "home_score": "2", "away_score": "1"},
+    "m67": {"home_team": "Colombia", "away_team": "Portugal", "home_score": "0", "away_score": "0"},
+    "m68": {"home_team": "Jordan", "away_team": "Argentina", "home_score": "1", "away_score": "3"},
     "m70": {"home_team": "South Africa", "away_team": "Canada", "home_score": "0", "away_score": "1"},
     "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_score": "1"},
     "m72": {"home_team": "Germany", "away_team": "Paraguay", "home_score": "1", "away_score": "2"},
     "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"}
 }
 
-# --- CHANGED: Renamed the server data file destination to completely bypass the old file cached on the server ---
-DB_FILE = "online_sweepstake_v2.json"
+# --- IMPORTANT STEP: Force file clear cascade to rewrite storage cleanly on boot ---
+DB_FILE = "online_sweepstake_v3.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
