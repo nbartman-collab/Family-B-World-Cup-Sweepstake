@@ -3,7 +3,10 @@ import pandas as pd
 import json
 import os
 
-# 1. Define the Sweepstake Pools exactly as drawn
+# Set up page styling
+st.set_page_config(page_title="Bartman Family Sweepstake", page_icon="🏆", layout="wide")
+
+# --- 1. POOLS & FLAGS CONFIGURATION ---
 SWEEPSTAKE_POOLS = {
     "Nick": ["England", "Mexico", "Morocco", "Australia", "Egypt", "Scotland", "South Africa", "Iraq"],
     "Kate": ["France", "Brazil", "Uruguay", "Japan", "Algeria", "Ivory Coast", "Uzbekistan", "Haiti"],
@@ -13,124 +16,44 @@ SWEEPSTAKE_POOLS = {
 }
 
 FLAG_MAPPING = {
-    "England": "🏴 *England*", "Mexico": "🇲🇽 *Mexico*", "Morocco": "🇲🇦 *Morocco*", "Australia": "🇦🇺 *Australia*", "Egypt": "🇪🇬 *Egypt*", "Scotland": "🏴 *Scotland*", "South Africa": "🇿🇦 *South Africa*", "Iraq": "🇮🇶 *Iraq*",
-    "France": "🇫🇷 *France*", "Brazil": "🇧🇷 *Brazil*", "Uruguay": "🇺🇾 *Uruguay*", "Japan": "🇯🇵 *Japan*", "Algeria": "🇩🇿 *Algeria*", "Ivory Coast": "🇨🇮 *Ivory Coast*", "Uzbekistan": "🇺🇿 *Uzbekistan*", "Haiti": "🇭🇹 *Haiti*",
-    "Spain": "🇪🇸 *Spain*", "United States": "🇺🇸 *United States*", "Colombia": "🇨🇴 *Colombia*", "Ecuador": "🇪🇨 *Ecuador*", "Norway": "🇳🇴 *Norway*", "Panama": "🇵🇦 *Panama*", "Jordan": "🇯🇴 *Jordan*", "Cape Verde": "🇨🇻 *Cape Verde*",
-    "Argentina": "🇦🇷 *Argentina*", "Germany": "🇩🇪 *Germany*", "Croatia": "🇭🇷 *Croatia*", "Iran": "🇮🇷 *Iran*", "Canada": "🇨🇦 *Canada*", "Paraguay": "🇵🇾 *Paraguay*", "Qatar": "🇶🇦 *Qatar*", "New Zealand": "🇳🇿 *New Zealand*",
-    "Portugal": "🇵🇹 *Portugal*", "Belgium": "🇧🇪 *Belgium*", "Switzerland": "🇨🇭 *Switzerland*", "South Korea": "🇰🇷 *South Korea*", "Austria": "🇦🇹 *Austria*", "Tunisia": "🇹🇳 *Tunisia*", "Saudi Arabia": "🇸🇦 *Saudi Arabia*", "Curaçao": "🇨🇼 *Curaçao*",
-    "Bosnia": "🇧🇦 *Bosnia*", "Türkiye": "🇹🇷 *Türkiye*", "Netherlands": "🇳🇱 *Netherlands*", "Sweden": "🇸🇪 *Sweden*", "Senegal": "🇸🇳 *Senegal*", "Czechia": "🇨🇿 *Czechia*", "Iraq": "🇮🇶 *Iraq*", "DR Congo": "🇨🇩 *DR Congo*", "Ghana": "🇬🇭 *Ghana*"
+    "England": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Mexico": "🇲🇽", "Morocco": "🇲🇦", "Australia": "🇦🇺", "Egypt": "🇪🇬", "Scotland": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "South Africa": "🇿🇦", "Iraq": "🇮🇶",
+    "France": "🇫🇷", "Brazil": "🇧🇷", "Uruguay": "🇺🇾", "Japan": "🇯🇵", "Algeria": "🇩🇿", "Ivory Coast": "🇨🇮", "Uzbekistan": "🇺🇿", "Haiti": "🇭🇹",
+    "Spain": "🇪🇸", "United States": "🇺🇸", "Colombia": "🇨🇴", "Ecuador": "🇪🇨", "Norway": "🇳🇴", "Panama": "🇵🇦", "Jordan": "🇯🇴", "Cape Verde": "🇨🇻",
+    "Argentina": "🇦🇷", "Germany": "🇩🇪", "Croatia": "🇭🇷", "Iran": "🇮🇷", "Canada": "🇨🇦", "Paraguay": "🇵🇾", "Qatar": "🇶🇦", "New Zealand": "🇳🇿",
+    "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼"
 }
 
+# --- 2. FIXTURES DICTIONARY (Round of 32 Schedule) ---
 FIXTURES_BY_DAY = {
-    "Thursday, June 11": [{"id": "m1", "home": "Mexico", "away": "South Africa", "time": "19:00"}],
-    "Friday, June 12": [
-        {"id": "m2", "home": "South Korea", "away": "Czechia", "time": "02:00"},
-        {"id": "m3", "home": "Canada", "away": "Bosnia", "time": "19:00"}
+    "Sunday, June 28": [{"id": "m70", "home": "South Africa", "away": "Canada", "time": "20:00"}],
+    "Monday, June 29": [
+        {"id": "m71", "home": "Brazil", "away": "Japan", "time": "18:00"},
+        {"id": "m72", "home": "Germany", "away": "Paraguay", "time": "21:30"},
+        {"id": "m73", "home": "Netherlands", "away": "Morocco", "time": "23:59"}
     ],
-    "Saturday, June 13": [
-        {"id": "m4", "home": "United States", "away": "Paraguay", "time": "01:00"},
-        {"id": "m5", "home": "Qatar", "away": "Switzerland", "time": "19:00"},
-        {"id": "m6", "home": "Brazil", "away": "Morocco", "time": "22:00"}
+    "Tuesday, June 30": [
+        {"id": "m74", "home": "Ivory Coast", "away": "Norway", "time": "18:00"},
+        {"id": "m75", "home": "France", "away": "Sweden", "time": "22:00"}
     ],
-    "Sunday, June 14": [
-        {"id": "m7", "home": "Haiti", "away": "Scotland", "time": "01:00"},
-        {"id": "m8", "home": "Australia", "away": "Türkiye", "time": "04:00"},
-        {"id": "m9", "home": "Germany", "away": "Curaçao", "time": "17:00"},
-        {"id": "m10", "home": "Netherlands", "away": "Japan", "time": "20:00"},
-        {"id": "m11", "home": "Ivory Coast", "away": "Ecuador", "time": "23:00"}
+    "Wednesday, July 1": [
+        {"id": "m76", "home": "Mexico", "away": "Ecuador", "time": "02:00"},
+        {"id": "m77", "home": "England", "away": "DR Congo", "time": "17:00"},
+        {"id": "m78", "home": "Belgium", "away": "Senegal", "time": "21:00"},
+        {"id": "m79", "home": "United States", "away": "Bosnia", "time": "01:00 (Thurs)"}
     ],
-    "Monday, June 15": [
-        {"id": "m12", "home": "Sweden", "away": "Tunisia", "time": "02:00"},
-        {"id": "m13", "home": "Spain", "away": "Cape Verde", "time": "16:00"},
-        {"id": "m14", "home": "Belgium", "away": "Egypt", "time": "19:00"},
-        {"id": "m15", "home": "Saudi Arabia", "away": "Uruguay", "time": "22:00"}
+    "Thursday, July 2": [
+        {"id": "m80", "home": "Spain", "away": "Austria", "time": "20:00"},
+        {"id": "m81", "home": "Portugal", "away": "Croatia", "time": "23:00"},
+        {"id": "m82", "home": "Switzerland", "away": "Algeria", "time": "04:00 (Fri)"}
     ],
-    "Tuesday, June 16": [
-        {"id": "m16", "home": "Iran", "away": "New Zealand", "time": "01:00"},
-        {"id": "m17", "home": "France", "away": "Senegal", "time": "19:00"},
-        {"id": "m18", "home": "Iraq", "away": "Norway", "time": "22:00"}
-    ],
-    "Wednesday, June 17": [
-        {"id": "m19", "home": "Argentina", "away": "Algeria", "time": "01:00"},
-        {"id": "m20", "home": "Austria", "away": "Jordan", "time": "04:00"},
-        {"id": "m21", "home": "Portugal", "away": "DR Congo", "time": "17:00"},
-        {"id": "m22", "home": "England", "away": "Croatia", "time": "20:00"},
-        {"id": "m23", "home": "Ghana", "away": "Panama", "time": "23:00"}
-    ],
-    "Thursday, June 18": [
-        {"id": "m24", "home": "Uzbekistan", "away": "Colombia", "time": "03:00"},
-        {"id": "m25", "home": "Czechia", "away": "South Africa", "time": "17:00"},
-        {"id": "m26", "home": "Switzerland", "away": "Bosnia", "time": "20:00"},
-        {"id": "m27", "home": "Canada", "away": "Qatar", "time": "23:00"}
-    ],
-    "Friday, June 19": [
-        {"id": "m28", "home": "Mexico", "away": "South Korea", "time": "02:00"},
-        {"id": "m29", "home": "United States", "away": "Australia", "time": "20:00"},
-        {"id": "m30", "home": "Scotland", "away": "Morocco", "time": "23:00"}
-    ],
-    "Saturday, June 20": [
-        {"id": "m31", "home": "Brazil", "away": "Haiti", "time": "01:30"},
-        {"id": "m32", "home": "Türkiye", "away": "Paraguay", "time": "04:00"},
-        {"id": "m33", "home": "Netherlands", "away": "Sweden", "time": "18:00"},
-        {"id": "m34", "home": "Germany", "away": "Ivory Coast", "time": "21:00"}
-    ],
-       "Sunday, June 21": [
-        {"id": "m35a", "home": "Ecuador", "away": "Curaçao", "time": "01:00"},
-        {"id": "m35b", "home": "Tunisia", "away": "Japan", "time": "05:00"},
-        {"id": "m35c", "home": "Spain", "away": "Saudi Arabia", "time": "17:00"},
-        {"id": "m36a", "home": "Belgium", "away": "Iran", "time": "20:00"},
-        {"id": "m36b", "home": "Uruguay", "away": "Cape Verde", "time": "23:00"}
-    ],
-    "Monday, June 22": [
-        {"id": "m37", "home": "New Zealand", "away": "Egypt", "time": "02:00"},
-        {"id": "m38", "home": "Argentina", "away": "Austria", "time": "18:00"},
-        {"id": "m39", "home": "France", "away": "Iraq", "time": "22:00"}
-    ],
-    "Tuesday, June 23": [
-        {"id": "m40", "home": "Norway", "away": "Senegal", "time": "01:00"},
-        {"id": "m41", "home": "Jordan", "away": "Algeria", "time": "04:00"},
-        {"id": "m42", "home": "Portugal", "away": "Uzbekistan", "time": "18:00"},
-        {"id": "m43", "home": "England", "away": "Ghana", "time": "21:00"}
-    ],
-    "Wednesday, June 24": [
-        {"id": "m44", "home": "Panama", "away": "Croatia", "time": "00:00"},
-        {"id": "m45", "home": "Colombia", "away": "DR Congo", "time": "03:00"},
-        {"id": "m46", "home": "Switzerland", "away": "Canada", "time": "20:00"},
-        {"id": "m47", "home": "Bosnia", "away": "Qatar", "time": "20:00"},
-        {"id": "m48", "home": "Morocco", "away": "Haiti", "time": "23:00"},
-        {"id": "m49", "home": "Scotland", "away": "Brazil", "time": "23:00"}
-    ],
-    "Thursday, June 25": [
-        {"id": "m50", "home": "South Africa", "away": "South Korea", "time": "02:00"},
-        {"id": "m51", "home": "Czechia", "away": "Mexico", "time": "02:00"},
-        {"id": "m52", "home": "Curaçao", "away": "Ivory Coast", "time": "21:00"},
-        {"id": "m53", "home": "Ecuador", "away": "Germany", "time": "21:00"}
-    ],
-    "Friday, June 26": [
-        {"id": "m54", "home": "Tunisia", "away": "Netherlands", "time": "00:00"},
-        {"id": "m55", "home": "Japan", "away": "Sweden", "time": "00:00"},
-        {"id": "m56", "home": "Türkiye", "away": "United States", "time": "03:00"},
-        {"id": "m57", "home": "Paraguay", "away": "Australia", "time": "03:00"},
-        {"id": "m58", "home": "Norway", "away": "France", "time": "20:00"},
-        {"id": "m59", "home": "Senegal", "away": "Iraq", "time": "20:00"}
-    ],
-    "Saturday, June 27": [
-        {"id": "m60", "home": "Cape Verde", "away": "Saudi Arabia", "time": "01:00"},
-        {"id": "m61", "home": "Uruguay", "away": "Spain", "time": "01:00"},
-        {"id": "m62", "home": "New Zealand", "away": "Belgium", "time": "04:00"},
-        {"id": "m63", "home": "Egypt", "away": "Iran", "time": "04:00"},
-        {"id": "m64", "home": "Panama", "away": "England", "time": "22:00"},
-        {"id": "m65", "home": "Croatia", "away": "Ghana", "time": "22:00"}
-    ],
-    "Sunday, June 28": [
-        {"id": "m66", "home": "DR Congo", "away": "Uzbekistan", "time": "00:00"},
-        {"id": "m67", "home": "Colombia", "away": "Portugal", "time": "00:00"},
-        {"id": "m68", "home": "Jordan", "away": "Argentina", "time": "03:00"},
-        {"id": "m69", "home": "Algeria", "away": "Austria", "time": "03:00"}
+    "Friday, July 3": [
+        {"id": "m83", "home": "Australia", "away": "Egypt", "time": "19:00"},
+        {"id": "m84", "home": "Argentina", "away": "Cape Verde", "time": "23:00"},
+        {"id": "m85", "home": "Colombia", "away": "Ghana", "time": "02:30 (Sat)"}
     ]
 }
 
-# --- MASTER SCORE BACKUP (Native Python Dictionary Override) ---
+# --- 3. HARDCODED BASELINE DATA LAYER (Your Full Historical Match List) ---
 match_scores = {
     "m1": {"home_team": "Mexico", "away_team": "South Africa", "home_score": "2", "away_score": "0"}, 
     "m2": {"home_team": "South Korea", "away_team": "Czechia", "home_score": "2", "away_score": "1"}, 
@@ -199,114 +122,99 @@ match_scores = {
     "m62": {"home_team": "New Zealand", "away_team": "Belgium", "home_score": "1", "away_score": "5"}, 
     "m63": {"home_team": "Egypt", "away_team": "Iran", "home_score": "1", "away_score": "1"}, 
     "m64": {"home_team": "Panama", "away_team": "England", "home_score": "0", "away_score": "2"}, 
-    "m65": {"home_team": "Croatia", "away_team": "Ghana", "home_score": "2", "away_score": "1"}, 
-    "m66": {"home_team": "-", "away_team": "-", "home_score": "-", "away_score": "-"}, 
-    "m67": {"home_team": "-", "away_team": "-", "home_score": "-", "away_score": "-"}, 
-    "m68": {"home_team": "-", "away_team": "-", "home_score": "-", "away_score": "-"}, 
-    "m69": {"home_team": "-", "away_team": "-", "home_score": "-", "away_score": "-"}
+    "m65": {"home_team": "Croatia", "away_team": "Ghana", "home_score": "2", "away_score": "1"},
+    "m70": {"home_team": "South Africa", "away_team": "Canada", "home_score": "0", "away_score": "1"},
+    "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_score": "1"},
+    "m72": {"home_team": "Germany", "away_team": "Paraguay", "home_score": "1", "away_score": "2"},
+    "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"}
 }
 
-# Emulated persistence functions to prevent structural layout errors down the line
-saved_scores = match_scores
-
-def load_global_scores():
-    return match_scores
-
-def save_global_scores(data):
-    # --- MASTER SCORE BACKUP FUNCTIONS ---
 DB_FILE = "online_sweepstake_memory.json"
-
 saved_scores = match_scores
 
 def load_global_scores():
+    if os.path.exists(DB_FILE):
+        try:
+            with open(DB_FILE, "r") as f:
+                live_data = json.load(f)
+                if live_data:
+                    return live_data
+        except:
+            pass
     return match_scores
 
 def save_global_scores(data):
-    # Fixed NameError by making sure DB_FILE is referenced safely
     try:
         with open(DB_FILE, "w") as f:
             json.dump(data, f)
     except:
         pass
 
-# Emulated persistence functions to prevent structural layout errors down the line
-saved_scores = match_scores
+# Initialize session state variables cleanly
+if "active_scores" not in st.session_state:
+    st.session_state.active_scores = load_global_scores()
 
-def load_global_scores():
-    return match_scores
-
-def save_global_scores(data):
-    pass    # Save to temporary active memory
-    with open(DB_FILE, "w") as f:
-        json.dump(data, f)
-saved_scores = load_global_scores()
-
-# Pull saved database files instantly from central container storage
-saved_scores = load_global_scores()
-
-st.set_page_config(page_title="2026 World Cup Sweepstake", page_icon="🏆", layout="wide")
-st.title("🏆 Bartman Family World Cup Sweepstake Live Scoreboard")
-
-# 2. Secure Sidebar Control Lock
-st.sidebar.header("🔐 Admin Dashboard")
-password = st.sidebar.text_input("Enter Admin Password to Log Scores", type="password")
+# --- 4. ADMIN PANEL SIDEBAR COMPONENT ---
+st.sidebar.title("🔐 Admin Dashboard")
+password = st.sidebar.text_input("Enter Passcode:", type="password")
 is_admin = (password == "wimbledon2026")
 
-match_scores = {}
-
 if is_admin:
-    st.sidebar.success("Access Granted! Update scores below:")
-    for match_date, match_list in FIXTURES_BY_DAY.items():
-        st.sidebar.markdown(f"### 📅 {match_date}")
-        for match in match_list:
-            m_id = match["id"]
-            h_team = match["home"]
-            a_team = match["away"]
-            
-            default_home = saved_scores.get(m_id, {}).get("home_score", "-")
-            default_away = saved_scores.get(m_id, {}).get("away_score", "-")
-            
-            options = ["-", "0", "1", "2", "3", "4", "5", "6"]
-            idx_h = options.index(default_home) if default_home in options else 0
-            idx_a = options.index(default_away) if default_away in options else 0
-            
-            st.sidebar.caption(f"⏰ Kickoff: **{match['time']} BST**")
-            col_h_name, col_h_score, col_vs, col_a_score, col_a_name = st.sidebar.columns([3, 2, 1, 2, 3])
-            
-            with col_h_name:
-                st.markdown(f"<p style='text-align: right; margin-top:5px;'>{h_team}</p>", unsafe_allow_html=True)
-            with col_h_score:
-                h_g = st.selectbox("", options=options, index=idx_h, key=f"h_{m_id}", label_visibility="collapsed")
-            with col_vs:
-                st.markdown("<p style='text-align: center; margin-top:5px;'>v</p>", unsafe_allow_html=True)
-            with col_a_score:
-                a_g = st.selectbox("", options=options, index=idx_a, key=f"a_{m_id}", label_visibility="collapsed")
-            with col_a_name:
-                st.markdown(f"<p style='text-align: left; margin-top:5px;'>{a_team}</p>", unsafe_allow_html=True)
-                
-            match_scores[m_id] = {"home_team": h_team, "away_team": a_team, "home_score": h_g, "away_score": a_g}
+    st.sidebar.success("Access Granted! Update live scores below.")
     
+    # Iterate dynamically through all weeks inside the sidebar inputs module
+    for day, matches in FIXTURES_BY_DAY.items():
+        st.sidebar.markdown(f"### 📅 {day}")
+        for match in matches:
+            m_id = match["id"]
+            
+            # Make sure all newly introduced matches exist inside working memory tracking
+            if m_id not in st.session_state.active_scores:
+                st.session_state.active_scores[m_id] = {"home_team": match["home"], "away_team": match["away"], "home_score": "-", "away_score": "-"}
+                
+            current_match_data = st.session_state.active_scores[m_id]
+            
+            col1, col2, col3 = st.sidebar.columns([3, 2, 3])
+            with col1:
+                st.write(f"**{match['home']}**")
+            with col2:
+                # Options list generation containing baseline scores options array
+                options = ["-"] + [str(i) for i in range(15)]
+                
+                h_idx = options.index(current_match_data.get("home_score", "-")) if current_match_data.get("home_score", "-") in options else 0
+                a_idx = options.index(current_match_data.get("away_score", "-")) if current_match_data.get("away_score", "-") in options else 0
+                
+                h_score = st.selectbox(f"H#{m_id}", options, index=h_idx, label_visibility="collapsed")
+                st.write("V")
+                a_score = st.selectbox(f"A#{m_id}", options, index=a_idx, label_visibility="collapsed")
+            with col3:
+                st.write(f"**{match['away']}**")
+                
+            st.session_state.active_scores[m_id]["home_score"] = h_score
+            st.session_state.active_scores[m_id]["away_score"] = a_score
+            st.sidebar.markdown(f"*Kickoff:* `{match['time']}`")
+            st.sidebar.markdown("---")
+            
     if st.sidebar.button("💾 Save & Publish Scores Online", use_container_width=True):
-        save_global_scores(match_scores)
+        save_global_scores(st.session_state.active_scores)
         st.sidebar.success("Global Scoreboard Updated!")
         st.rerun()
 else:
     st.sidebar.info("Family View: Keeping track live! Input fields are locked out.")
-    match_scores = saved_scores
 
-# Calculate Standings (Fixed to accumulate multiple matches per team)
+# Sync current loop metrics against validated database tracking values
+current_scores_dictionary = st.session_state.active_scores
+
+# --- 5. STANDINGS LEAGUE CALCULATOR ---
 stats = {name: {"Played": 0, "Wins": 0, "Draws": 0, "Losses": 0, "Points": 0} for name in SWEEPSTAKE_POOLS}
-
-# Change team_records to hold a list of results for each country
 team_records = {}
 
-for m_id, score_data in match_scores.items():
+for m_id, score_data in current_scores_dictionary.items():
     h_s = score_data.get("home_score", "-")
     a_s = score_data.get("away_score", "-")
     
     if h_s != "-" and a_s != "-":
         h_goals, a_goals = int(h_s), int(a_s)
-        
         h_team = score_data["home_team"]
         a_team = score_data["away_team"]
         
@@ -314,55 +222,4 @@ for m_id, score_data in match_scores.items():
         if a_team not in team_records: team_records[a_team] = []
         
         if h_goals > a_goals:
-            team_records[h_team].append("W")
-            team_records[a_team].append("L")
-        elif a_goals > h_goals:
-            team_records[h_team].append("L")
-            team_records[a_team].append("W")
-        else:
-            team_records[h_team].append("D")
-            team_records[a_team].append("D")
-
-for participant, team_list in SWEEPSTAKE_POOLS.items():
-    for team in team_list:
-        # Loop through ALL recorded match outcomes for this country
-        outcomes = team_records.get(team, [])
-        for outcome in outcomes:
-            if outcome == "W":
-                stats[participant]["Wins"] += 1
-                stats[participant]["Points"] += 3
-            elif outcome == "D":
-                stats[participant]["Draws"] += 1
-                stats[participant]["Points"] += 1
-            elif outcome == "L":
-                stats[participant]["Losses"] += 1
-        
-    # Calculate total played cleanly from accumulated results
-    stats[participant]["Played"] = stats[participant]["Wins"] + stats[participant]["Draws"] + stats[participant]["Losses"]
-
-# Render Table Standings
-df = pd.DataFrame.from_dict(stats, orient="index").reset_index()
-df.columns = ["Participant", "Played", "Wins", "Draws", "Losses", "Total Points"]
-df = df.sort_values(by=["Total Points", "Wins"], ascending=False).reset_index(drop=True)
-df.index += 1 
-
-st.subheader("📊 Live League Table Standings")
-st.table(df)
-
-st.subheader("🏃‍♂️ Team Pools Current Performance Tracking")
-cols = st.columns(5)
-for idx, (player, teams) in enumerate(SWEEPSTAKE_POOLS.items()):
-    with cols[idx]:
-        st.markdown(f"### **{player}**")
-        for t in teams:
-            flag = FLAG_MAPPING.get(t, t)
-            outcomes = team_records.get(t, [])
-            status_text = f" **({" ,".join(outcomes)})**" if outcomes else ""
-            st.markdown(f"• {flag}{status_text}")
-
-# Emergency Cloud Backup section for the Admin
-if is_admin:
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("💾 Emergency Cloud Backup")
-    st.sidebar.write("If the server resets, copy this text block and paste it into MASTER_BACKUP_STRING on GitHub:")
-    st.sidebar.code(json.dumps(match_scores))
+            team_records
