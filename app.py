@@ -53,7 +53,7 @@ FIXTURES_BY_DAY = {
     ]
 }
 
-# --- 3. HARDCODED BASELINE DATA LAYER (Restored Historical Records) ---
+# --- 3. HARDCODED BASELINE DATA LAYER (Master Records) ---
 match_scores = {
     "m1": {"home_team": "Mexico", "away_team": "South Africa", "home_score": "2", "away_score": "0"},
     "m2": {"home_team": "South Korea", "away_team": "Czechia", "home_score": "2", "away_score": "1"},
@@ -124,12 +124,13 @@ match_scores = {
     "m64": {"home_team": "Panama", "away_team": "England", "home_score": "0", "away_score": "2"},
     "m65": {"home_team": "Croatia", "away_team": "Ghana", "home_score": "2", "away_score": "1"},
     "m70": {"home_team": "South Africa", "away_team": "Canada", "home_score": "0", "away_score": "1"},
-    "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_team": "1"},
+    "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_score": "1"},
     "m72": {"home_team": "Germany", "away_team": "Paraguay", "home_score": "1", "away_score": "2"},
     "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"}
 }
 
-DB_FILE = "online_sweepstake_memory.json"
+# --- CHANGED: Renamed the server data file destination to completely bypass the old file cached on the server ---
+DB_FILE = "online_sweepstake_v2.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
