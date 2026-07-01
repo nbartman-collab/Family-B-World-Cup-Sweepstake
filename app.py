@@ -151,4 +151,114 @@ def save_global_scores(data):
 
 # Initialize session state variables cleanly
 if "active_scores" not in st.session_state:
-    st.session_state
+    st.session_state.active_scores = load_global_scores()
+
+# --- 4. ADMIN PANEL SIDEBAR COMPONENT ---
+st.sidebar.title("🔐 Admin Dashboard")
+password = st.sidebar.text_input("Enter Passcode:", type="password")
+is_admin = (password == "wimbledon2026")
+
+if is_admin:
+    st.sidebar.success("Access Granted! Update live scores below.")
+    
+    for day, matches in FIXTURES_BY_DAY.items():
+        st.sidebar.markdown(f"### 📅 {day}")
+        for match in matches:
+            m_id = match["id"]
+            
+            if m_id not in st.session_state.active_scores:
+                st.session_state.active_scores[m_id] = {"home_team": match["home"], "away_team": match["away"], "home_score": "-", "away_score": "-"}
+                
+            current_match_data = st.session_state.active_scores[m_id]
+            
+            col1, col2, col3 = st.sidebar.columns([3, 2, 3])
+            with col1:
+                st.write(f"**{match['home']}**")
+            with col2:
+                options = ["-"] + [str(i) for i in range(15)]
+                
+                h_idx = options.index(current_match_data.get("home_score", "-")) if current_match_data.get("home_score", "-") in options else 0
+                a_idx = options.index(current_match_data.get("away_score", "-")) if current_match_data.get("away_score", "-") in options else 0
+                
+                h_score = st.selectbox(f"H#{m_id}", options, index=h_idx, label_visibility="collapsed")
+                st.write("V")
+                a_score = st.selectbox(f"A#{m_id}", options, index=a_idx, label_visibility="collapsed")
+            with col3:
+                st.write(f"**{match['away']}**")
+                
+            st.session_state.active_scores[m_id]["home_score"] = h_score
+            st.session_state.active_scores[m_id]["away_score"] = a_score
+            st.sidebar.markdown(f"*Kickoff:* `{match['time']}`")
+            st.sidebar.markdown("---")
+            
+    if st.sidebar.button("💾 Save & Publish Scores Online", use_container_width=True):
+        save_global_scores(st.session_state.active_scores)
+        st.sidebar.success("Global Scoreboard Updated!")
+        st.rerun()
+else:
+    st.sidebar.info("Family View: Keeping track live! Input fields are locked out.")
+
+current_scores_dictionary = st.session_state.active_scores
+
+# --- 5. STANDINGS LEAGUE CALCULATOR ---
+stats = {name: {"Played": 0, "Wins": 0, "Draws": 0, "Losses": 0, "Points": 0} for name in SWEEPSTAKE_POOLS}
+team_records = {}
+
+for m_id, score_data in current_scores_dictionary.items():
+    h_s = score_data.get("home_score", "-")
+    a_s = score_data.get("away_score", "-")
+    
+    if h_s != "-" and a_s != "-":
+        h_goals, a_goals = int(h_s), int(a_s)
+        h_team = score_data["home_team"]
+        a_team = score_data["away_team"]
+        
+        if h_team not in team_records: team_records[h_team] = []
+        if a_team not in team_records: team_records[a_team] = []
+        
+        if h_goals > a_goals:
+            team_records[h_team].append("W")
+            team_records[a_team].append("L")
+        elif a_goals > h_goals:
+            team_records[h_team].append("L")
+            team_records[a_team].append("W")
+        else:
+            team_records[h_team].append("D")
+            team_records[a_team].append("D")
+
+for participant, team_list in SWEEPSTAKE_POOLS.items():
+    for team in team_list:
+        outcomes = team_records.get(team, [])
+        for outcome in outcomes:
+            if outcome == "W":
+                stats[participant]["Wins"] += 1
+                stats[participant]["Points"] += 3
+            elif outcome == "D":
+                stats[participant]["Draws"] += 1
+                stats[participant]["Points"] += 1
+            elif outcome == "L":
+                stats[participant]["Losses"] += 1
+        
+    stats[participant]["Played"] = stats[participant]["Wins"] + stats[participant]["Draws"] + stats[participant]["Losses"]
+
+# --- 6. USER INTERFACE LAYOUT DISPLAY ---
+st.title("🏆 Bartman Family World Cup Sweepstake Live Scoreboard")
+
+df = pd.DataFrame.from_dict(stats, orient="index").reset_index()
+df.columns = ["Participant", "Played", "Wins", "Draws", "Losses", "Total Points"]
+df = df.sort_values(by=["Total Points", "Wins"], ascending=False).reset_index(drop=True)
+df.index += 1 
+
+st.subheader("📊 Live League Table Standings")
+st.table(df)
+
+st.subheader("🏃‍♂️ Team Pools Current Performance Tracking")
+cols = st.columns(5)
+for idx, (player, teams) in enumerate(SWEEPSTAKE_POOLS.items()):
+    with cols[idx]:
+        st.markdown(f"### **{player}**")
+        for t in teams:
+            flag = FLAG_MAPPING.get(t, "🏳️")
+            outcomes = team_records.get(t, [])
+            status_text = f" **({', '.join(outcomes)})**" if outcomes else ""
+            st.markdown(f"• {flag} {t}{status_text}")
