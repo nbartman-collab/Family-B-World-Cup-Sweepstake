@@ -23,23 +23,23 @@ FLAG_MAPPING = {
     "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼"
 }
 
-# --- 2. FIXTURES DICTIONARY (Next Phase Tournament Schedule) ---
+# --- 2. FIXTURES DICTIONARY (Weekend & Upcoming Knockout Phase Schedule) ---
 FIXTURES_BY_DAY = {
+    "Saturday, July 4": [
+        {"id": "m86", "home": "Canada", "away": "Morocco", "time": "22:30"},
+        {"id": "m87", "home": "Paraguay", "away": "France", "time": "02:30 (Sun)"}
+    ],
+    "Sunday, July 5": [
+        {"id": "m88", "home": "Brazil", "away": "Norway", "time": "21:00"},
+        {"id": "m89", "home": "Mexico", "away": "England", "time": "01:00 (Mon)"}
+    ],
     "Monday, July 6": [
-        {"id": "m86", "home": "South Africa", "away": "Brazil", "time": "18:00"},
-        {"id": "m87", "home": "Germany", "away": "Morocco", "time": "21:00"}
+        {"id": "m90", "home": "Portugal", "away": "Spain", "time": "23:30"}
     ],
     "Tuesday, July 7": [
-        {"id": "m88", "home": "Ivory Coast", "away": "France", "time": "17:30"},
-        {"id": "m89", "home": "Ecuador", "away": "England", "time": "21:00"}
-    ],
-    "Wednesday, July 8": [
-        {"id": "m90", "home": "Belgium", "away": "Spain", "time": "19:00"},
-        {"id": "m91", "home": "Portugal", "away": "Algeria", "time": "22:30"}
-    ],
-    "Thursday, July 9": [
-        {"id": "m92", "home": "Egypt", "away": "Argentina", "time": "20:00"},
-        {"id": "m93", "home": "Colombia", "away": "Switzerland", "time": "23:59"}
+        {"id": "m91", "home": "United States", "away": "Belgium", "time": "04:30 (Wed)"},
+        {"id": "m92", "home": "Argentina", "away": "Egypt", "time": "21:30"},
+        {"id": "m93", "home": "Switzerland", "away": "Colombia", "time": "01:30 (Wed)"}
     ]
 }
 
@@ -125,8 +125,8 @@ match_scores = {
     "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"}
 }
 
-# Bumped directory to v5 to roll over cache storage cleanly
-DB_FILE = "online_sweepstake_v5.json"
+# Bumped index file storage structure to v6 to execute data reload seamlessly 
+DB_FILE = "online_sweepstake_v6.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
