@@ -23,37 +23,27 @@ FLAG_MAPPING = {
     "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼"
 }
 
-# --- 2. FIXTURES DICTIONARY (Tournament Schedule) ---
+# --- 2. FIXTURES DICTIONARY (Next Phase Tournament Schedule) ---
 FIXTURES_BY_DAY = {
-    "Sunday, June 28": [{"id": "m70", "home": "South Africa", "away": "Canada", "time": "20:00"}],
-    "Monday, June 29": [
-        {"id": "m71", "home": "Brazil", "away": "Japan", "time": "18:00"},
-        {"id": "m72", "home": "Germany", "away": "Paraguay", "time": "21:30"},
-        {"id": "m73", "home": "Netherlands", "away": "Morocco", "time": "23:59"}
+    "Monday, July 6": [
+        {"id": "m86", "home": "South Africa", "away": "Brazil", "time": "18:00"},
+        {"id": "m87", "home": "Germany", "away": "Morocco", "time": "21:00"}
     ],
-    "Tuesday, June 30": [
-        {"id": "m74", "home": "Ivory Coast", "away": "Norway", "time": "18:00"},
-        {"id": "m75", "home": "France", "away": "Sweden", "time": "22:00"}
+    "Tuesday, July 7": [
+        {"id": "m88", "home": "Ivory Coast", "away": "France", "time": "17:30"},
+        {"id": "m89", "home": "Ecuador", "away": "England", "time": "21:00"}
     ],
-    "Wednesday, July 1": [
-        {"id": "m76", "home": "Mexico", "away": "Ecuador", "time": "02:00"},
-        {"id": "m77", "home": "England", "away": "DR Congo", "time": "17:00"},
-        {"id": "m78", "home": "Belgium", "away": "Senegal", "time": "21:00"},
-        {"id": "m79", "home": "United States", "away": "Bosnia", "time": "01:00 (Thurs)"}
+    "Wednesday, July 8": [
+        {"id": "m90", "home": "Belgium", "away": "Spain", "time": "19:00"},
+        {"id": "m91", "home": "Portugal", "away": "Algeria", "time": "22:30"}
     ],
-    "Thursday, July 2": [
-        {"id": "m80", "home": "Spain", "away": "Austria", "time": "20:00"},
-        {"id": "m81", "home": "Portugal", "away": "Croatia", "time": "23:00"},
-        {"id": "m82", "home": "Switzerland", "away": "Algeria", "time": "04:00 (Fri)"}
-    ],
-    "Friday, July 3": [
-        {"id": "m83", "home": "Australia", "away": "Egypt", "time": "19:00"},
-        {"id": "m84", "home": "Argentina", "away": "Cape Verde", "time": "23:00"},
-        {"id": "m85", "home": "Colombia", "away": "Ghana", "time": "02:30 (Sat)"}
+    "Thursday, July 9": [
+        {"id": "m92", "home": "Egypt", "away": "Argentina", "time": "20:00"},
+        {"id": "m93", "home": "Colombia", "away": "Switzerland", "time": "23:59"}
     ]
 }
 
-# --- 3. HARDCODED BASELINE DATA LAYER (Master Records) ---
+# --- 3. HARDCODED BASELINE DATA LAYER (Master Records updated with Friday's Scores) ---
 match_scores = {
     "m1": {"home_team": "Mexico", "away_team": "South Africa", "home_score": "2", "away_score": "0"},
     "m2": {"home_team": "South Korea", "away_team": "Czechia", "home_score": "2", "away_score": "1"},
@@ -129,11 +119,14 @@ match_scores = {
     "m70": {"home_team": "South Africa", "away_team": "Canada", "home_score": "0", "away_score": "1"},
     "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_score": "1"},
     "m72": {"home_team": "Germany", "away_team": "Paraguay", "home_score": "1", "away_score": "2"},
-    "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"}
+    "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"},
+    "m83": {"home_team": "Australia", "away_team": "Egypt", "home_score": "2", "away_score": "4"},
+    "m84": {"home_team": "Argentina", "away_team": "Cape Verde", "home_score": "3", "away_score": "2"},
+    "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"}
 }
 
-# Bumped version to v4 to clear the server layer cache and apply updates
-DB_FILE = "online_sweepstake_v4.json"
+# Bumped directory to v5 to roll over cache storage cleanly
+DB_FILE = "online_sweepstake_v5.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
