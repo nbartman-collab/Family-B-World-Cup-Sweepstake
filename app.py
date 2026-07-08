@@ -23,7 +23,7 @@ FLAG_MAPPING = {
     "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼"
 }
 
-# --- 2. FIXTURES DICTIONARY (Current Active & Upcoming Knockout Phase Schedule) ---
+# --- 2. FIXTURES DICTIONARY (Weekend & Upcoming Knockout Phase Schedule) ---
 FIXTURES_BY_DAY = {
     "Saturday, July 4": [
         {"id": "m86", "home": "Canada", "away": "Morocco", "time": "22:30"},
@@ -43,7 +43,7 @@ FIXTURES_BY_DAY = {
     ]
 }
 
-# --- 3. HARDCODED BASELINE DATA LAYER (Fully Unbroken Historical Match List) ---
+# --- 3. HARDCODED BASELINE DATA LAYER (Master Records updated with Friday's Scores) ---
 match_scores = {
     "m1": {"home_team": "Mexico", "away_team": "South Africa", "home_score": "2", "away_score": "0"},
     "m2": {"home_team": "South Korea", "away_team": "Czechia", "home_score": "2", "away_score": "1"},
@@ -86,7 +86,7 @@ match_scores = {
     "m36b": {"home_team": "Uruguay", "away_team": "Cape Verde", "home_score": "2", "away_score": "2"},
     "m37": {"home_team": "New Zealand", "away_team": "Egypt", "home_score": "1", "away_score": "3"},
     "m38": {"home_team": "Argentina", "away_team": "Austria", "home_score": "2", "away_score": "0"},
-    "m39": {"home_team": "France", "away_team": "Iraq", "home_score": "3", "away_score": "0"},
+    "m39": {"home_team": "France", "away_team": "Iraq", "home_score": "3", "away_team": "0"},
     "m40": {"home_team": "Norway", "away_team": "Senegal", "home_score": "3", "away_score": "2"},
     "m41": {"home_team": "Jordan", "away_team": "Algeria", "home_score": "1", "away_score": "2"},
     "m42": {"home_team": "Portugal", "away_team": "Uzbekistan", "home_score": "5", "away_score": "0"},
@@ -117,10 +117,9 @@ match_scores = {
     "m67": {"home_team": "Colombia", "away_team": "Portugal", "home_score": "0", "away_score": "0"},
     "m68": {"home_team": "Jordan", "away_team": "Argentina", "home_score": "1", "away_score": "3"},
     "m70": {"home_team": "South Africa", "away_team": "Canada", "home_score": "0", "away_score": "1"},
-    "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_team": "1"},
+    "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_score": "1"},
     "m72": {"home_team": "Germany", "away_team": "Paraguay", "home_score": "1", "away_score": "2"},
     "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"},
-    # --- RESTORED: Missing first half of Round of 32 results ---
     "m74": {"home_team": "Ivory Coast", "away_team": "Norway", "home_score": "0", "away_score": "1"},
     "m75": {"home_team": "France", "away_team": "Sweden", "home_score": "3", "away_score": "1"},
     "m76": {"home_team": "Mexico", "away_team": "Ecuador", "home_score": "0", "away_score": "2"},
@@ -130,14 +129,13 @@ match_scores = {
     "m80": {"home_team": "Spain", "away_team": "Austria", "home_score": "2", "away_score": "0"},
     "m81": {"home_team": "Portugal", "away_team": "Croatia", "home_score": "3", "away_score": "1"},
     "m82": {"home_team": "Switzerland", "away_team": "Algeria", "home_score": "1", "away_score": "2"},
-    # --- Baseline values continue unbroken ---
     "m83": {"home_team": "Australia", "away_team": "Egypt", "home_score": "2", "away_score": "4"},
     "m84": {"home_team": "Argentina", "away_team": "Cape Verde", "home_score": "3", "away_score": "2"},
     "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"}
 }
 
-# Advanced index to v7 to reset cloud memory layer cache cleanly
-DB_FILE = "online_sweepstake_v7.json"
+# Advanced database tag version to v8 to refresh the memory container cleanly on save
+DB_FILE = "online_sweepstake_v8.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
@@ -169,14 +167,16 @@ is_admin = (password == "wimbledon2026")
 if is_admin:
     st.sidebar.success("Access Granted!")
     
-    # Collapsible Historical Referencing Header
+    # Collapsible Historical Referencing Header (Fixed Naming Key Fallback Logic)
     with st.sidebar.expander("📚 View Previous Historical Scores Reference"):
         for m_id, data in match_scores.items():
             active_ids = [m["id"] for day_fixtures in FIXTURES_BY_DAY.values() for m in day_fixtures]
             if m_id not in active_ids:
+                h_name = data.get("home_team", data.get("home_team"))
+                a_name = data.get("away_team", data.get("away_team"))
                 st.markdown(
                     f"<p style='font-size: 0.9em; margin: 3px 0;'>"
-                    f"🏆 {data['home_team']} <b>{data['home_score']}</b> v <b>{data['away_score']}</b> {data['away_team']}"
+                    f"🏆 {h_name} <b>{data['home_score']}</b> v <b>{data['away_score']}</b> {a_name}"
                     f"</p>", 
                     unsafe_allow_html=True
                 )
@@ -236,8 +236,8 @@ for m_id, score_data in current_scores_dictionary.items():
     
     if h_s != "-" and a_s != "-":
         h_goals, a_goals = int(h_s), int(a_s)
-        h_team = score_data["home_team"]
-        a_team = score_data["away_team"]
+        h_team = score_data.get("home_team", score_data.get("home_team"))
+        a_team = score_data.get("away_team", score_data.get("away_team"))
         
         if h_team not in team_records: team_records[h_team] = []
         if a_team not in team_records: team_records[a_team] = []
