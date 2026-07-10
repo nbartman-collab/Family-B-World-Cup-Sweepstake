@@ -117,7 +117,8 @@ match_scores = {
     "m67": {"home_team": "Colombia", "away_team": "Portugal", "home_score": "0", "away_score": "0"},
     "m68": {"home_team": "Jordan", "away_team": "Argentina", "home_score": "1", "away_score": "3"},
     "m70": {"home_team": "South Africa", "away_team": "Canada", "home_score": "0", "away_score": "1"},
-    "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_team": "1"},
+    "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_score": "1"},
+    # --- FIXED TYPO HERE (Changed away_team to away_score) ---
     "m72": {"home_team": "Germany", "away_team": "Paraguay", "home_score": "1", "away_score": "2"},
     "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"},
     "m74": {"home_team": "Ivory Coast", "away_team": "Norway", "home_score": "0", "away_score": "1"},
@@ -134,8 +135,8 @@ match_scores = {
     "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"}
 }
 
-# Advanced backup file container definition to v9 to completely clear out cached server logs
-DB_FILE = "online_sweepstake_v9.json"
+# Advanced backup file container definition to v10 to clear the server cache log
+DB_FILE = "online_sweepstake_v10.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
@@ -167,7 +168,7 @@ is_admin = (password == "wimbledon2026")
 if is_admin:
     st.sidebar.success("Access Granted!")
     
-    # Collapsible Historical Referencing Header (Fixed Strict Fallback Logic)
+    # Collapsible Historical Referencing Header (Fixed Safe Fallback Configuration)
     with st.sidebar.expander("📚 View Previous Historical Scores Reference"):
         for m_id, data in match_scores.items():
             active_ids = [m["id"] for day_fixtures in FIXTURES_BY_DAY.values() for m in day_fixtures]
@@ -176,7 +177,7 @@ if is_admin:
                 a_name = data.get("away_team", data.get("away", "Unknown"))
                 st.markdown(
                     f"<p style='font-size: 0.9em; margin: 3px 0;'>"
-                    f"🏆 {h_name} <b>{data['home_score']}</b> v <b>{data['away_score']}</b> {a_name}"
+                    f"🏆 {h_name} <b>{data.get('home_score', '-')}</b> v <b>{data.get('away_score', '-')}</b> {a_name}"
                     f"</p>", 
                     unsafe_allow_html=True
                 )
