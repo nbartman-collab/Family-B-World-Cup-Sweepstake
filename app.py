@@ -27,7 +27,8 @@ FLAG_MAPPING = {
 FIXTURES_BY_DAY = {
     "Friday, July 10 (Quarter-Finals)": [
         {"id": "m94", "home": "Morocco", "away": "France", "time": "18:00"},
-        {"id": "m95", "home": "Brazil", "away": "England", "time": "22:00"}
+        # UPDATED: Changed Brazil to Norway
+        {"id": "m95", "home": "Norway", "away": "England", "time": "22:00"}
     ],
     "Saturday, July 11 (Quarter-Finals)": [
         {"id": "m96", "home": "Portugal", "away": "Belgium", "time": "19:00"},
@@ -41,7 +42,7 @@ FIXTURES_BY_DAY = {
     ]
 }
 
-# --- 3. HARDCODED BASELINE DATA LAYER (Master Records Unbroken) ---
+# --- 3. HARDCODED BASELINE DATA LAYER (Master Records Unbroken and Accurate) ---
 match_scores = {
     "m1": {"home_team": "Mexico", "away_team": "South Africa", "home_score": "2", "away_score": "0"},
     "m2": {"home_team": "South Korea", "away_team": "Czechia", "home_score": "2", "away_score": "1"},
@@ -84,7 +85,7 @@ match_scores = {
     "m36b": {"home_team": "Uruguay", "away_team": "Cape Verde", "home_score": "2", "away_score": "2"},
     "m37": {"home_team": "New Zealand", "away_team": "Egypt", "home_score": "1", "away_score": "3"},
     "m38": {"home_team": "Argentina", "away_team": "Austria", "home_score": "2", "away_score": "0"},
-    "m39": {"home_team": "France", "away_team": "Iraq", "home_score": "3", "away_score": "0"},
+    "m39": {"home_team": "France", "away_team": "Iraq", "home_score": "3", "away_team": "0"},
     "m40": {"home_team": "Norway", "away_team": "Senegal", "home_score": "3", "away_score": "2"},
     "m41": {"home_team": "Jordan", "away_team": "Algeria", "home_score": "1", "away_score": "2"},
     "m42": {"home_team": "Portugal", "away_team": "Uzbekistan", "home_score": "5", "away_score": "0"},
@@ -118,22 +119,22 @@ match_scores = {
     "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_score": "1"},
     "m72": {"home_team": "Germany", "away_team": "Paraguay", "home_score": "1", "away_score": "2"},
     "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"},
-    "m74": {"home_team": "Ivory Coast", "away_team": "Norway", "home_score": "0", "away_score": "1"},
-    "m75": {"home_team": "France", "away_team": "Sweden", "home_score": "3", "away_score": "1"},
-    "m76": {"home_team": "Mexico", "away_team": "Ecuador", "home_score": "0", "away_score": "2"},
-    "m77": {"home_team": "England", "away_team": "Uzbekistan", "home_score": "2", "away_score": "0"},
-    "m78": {"home_team": "Belgium", "away_team": "Senegal", "home_score": "4", "away_score": "1"},
-    "m79": {"home_team": "United States", "away_team": "Bosnia", "home_score": "1", "away_score": "0"},
-    "m80": {"home_team": "Spain", "away_team": "Austria", "home_score": "2", "away_score": "0"},
-    "m81": {"home_team": "Portugal", "away_team": "Croatia", "home_score": "3", "away_score": "1"},
-    "m82": {"home_team": "Switzerland", "away_team": "Algeria", "home_score": "1", "away_score": "2"},
+    "m74": {"home_team": "Ivory Coast", "away_team": "Norway", "home_score": "1", "away_score": "2"},
+    "m75": {"home_team": "France", "away_team": "Sweden", "home_score": "3", "away_score": "0"},
+    "m76": {"home_team": "Mexico", "away_team": "Ecuador", "home_score": "2", "away_score": "0"},
+    "m77": {"home_team": "England", "away_team": "DR Congo", "home_score": "2", "away_score": "1"},
+    "m78": {"home_team": "Belgium", "away_team": "Senegal", "home_score": "3", "away_score": "2"},
+    "m79": {"home_team": "United States", "away_team": "Bosnia", "home_score": "2", "away_score": "0"},
+    "m80": {"home_team": "Spain", "away_team": "Austria", "home_score": "3", "away_score": "0"},
+    "m81": {"home_team": "Portugal", "away_team": "Croatia", "home_score": "2", "away_score": "1"},
+    "m82": {"home_team": "Switzerland", "away_team": "Algeria", "home_score": "2", "away_score": "0"},
     "m83": {"home_team": "Australia", "away_team": "Egypt", "home_score": "2", "away_score": "4"},
     "m84": {"home_team": "Argentina", "away_team": "Cape Verde", "home_score": "3", "away_score": "2"},
     "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"}
 }
 
-# Advanced index to v11 to cleanly wipe any cached placeholder data on the server
-DB_FILE = "online_sweepstake_v11.json"
+# Bumped cloud cache tracking path index tag to v13 to execute reset smoothly
+DB_FILE = "online_sweepstake_v13.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
