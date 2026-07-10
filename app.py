@@ -23,16 +23,15 @@ FLAG_MAPPING = {
     "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼"
 }
 
-# --- 2. FIXTURES DICTIONARY (Quarter-Finals & Semi-Finals Schedule) ---
+# --- 2. FIXTURES DICTIONARY (Corrected Quarter-Finals & Semi-Finals Schedule) ---
 FIXTURES_BY_DAY = {
     "Friday, July 10 (Quarter-Finals)": [
         {"id": "m94", "home": "Morocco", "away": "France", "time": "18:00"},
-        # UPDATED: Changed Brazil to Norway
-        {"id": "m95", "home": "Norway", "away": "England", "time": "22:00"}
+        {"id": "m95", "home": "Norway", "away": "England", "time": "22:00"}  # Corrected to Norway
     ],
     "Saturday, July 11 (Quarter-Finals)": [
-        {"id": "m96", "home": "Portugal", "away": "Belgium", "time": "19:00"},
-        {"id": "m97", "home": "Argentina", "away": "Colombia", "time": "23:00"}
+        {"id": "m96", "home": "Spain", "away": "Belgium", "time": "19:00"},
+        {"id": "m97", "home": "Argentina", "away": "Switzerland", "time": "23:00"}
     ],
     "Tuesday, July 14 (Semi-Finals)": [
         {"id": "m98", "home": "Winner M94", "away": "Winner M95", "time": "21:00"}
@@ -42,7 +41,7 @@ FIXTURES_BY_DAY = {
     ]
 }
 
-# --- 3. HARDCODED BASELINE DATA LAYER (Master Records Unbroken and Accurate) ---
+# --- 3. HARDCODED BASELINE DATA LAYER (All Historical Records Up To Date) ---
 match_scores = {
     "m1": {"home_team": "Mexico", "away_team": "South Africa", "home_score": "2", "away_score": "0"},
     "m2": {"home_team": "South Korea", "away_team": "Czechia", "home_score": "2", "away_score": "1"},
@@ -85,7 +84,7 @@ match_scores = {
     "m36b": {"home_team": "Uruguay", "away_team": "Cape Verde", "home_score": "2", "away_score": "2"},
     "m37": {"home_team": "New Zealand", "away_team": "Egypt", "home_score": "1", "away_score": "3"},
     "m38": {"home_team": "Argentina", "away_team": "Austria", "home_score": "2", "away_score": "0"},
-    "m39": {"home_team": "France", "away_team": "Iraq", "home_score": "3", "away_team": "0"},
+    "m39": {"home_team": "France", "away_team": "Iraq", "home_score": "3", "away_score": "0"},
     "m40": {"home_team": "Norway", "away_team": "Senegal", "home_score": "3", "away_score": "2"},
     "m41": {"home_team": "Jordan", "away_team": "Algeria", "home_score": "1", "away_score": "2"},
     "m42": {"home_team": "Portugal", "away_team": "Uzbekistan", "home_score": "5", "away_score": "0"},
@@ -130,11 +129,19 @@ match_scores = {
     "m82": {"home_team": "Switzerland", "away_team": "Algeria", "home_score": "2", "away_score": "0"},
     "m83": {"home_team": "Australia", "away_team": "Egypt", "home_score": "2", "away_score": "4"},
     "m84": {"home_team": "Argentina", "away_team": "Cape Verde", "home_score": "3", "away_score": "2"},
-    "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"}
+    "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"},
+    "m86": {"home_team": "Canada", "away_team": "Morocco", "home_score": "0", "away_score": "3"},
+    "m87": {"home_team": "Paraguay", "away_team": "France", "home_score": "0", "away_score": "1"},
+    "m88": {"home_team": "Norway", "away_team": "Brazil", "home_score": "2", "away_score": "1"},  # Corrected
+    "m89": {"home_team": "Mexico", "away_team": "England", "home_score": "2", "away_score": "3"},
+    "m90": {"home_team": "Portugal", "away_team": "Spain", "home_score": "0", "away_score": "1"},
+    "m91": {"home_team": "United States", "away_team": "Belgium", "home_score": "1", "away_score": "4"},
+    "m92": {"home_team": "Argentina", "away_team": "Egypt", "home_score": "3", "away_score": "2"},
+    "m93": {"home_team": "Switzerland", "away_team": "Colombia", "home_score": "4", "away_score": "3"}
 }
 
-# Bumped cloud cache tracking path index tag to v13 to execute reset smoothly
-DB_FILE = "online_sweepstake_v13.json"
+# Version v15 rolls over file container cleanly to prevent web cache retention
+DB_FILE = "online_sweepstake_v15.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
@@ -154,7 +161,6 @@ def save_global_scores(data):
     except:
         pass
 
-# Initialize session state variables cleanly
 if "active_scores" not in st.session_state:
     st.session_state.active_scores = load_global_scores()
 
@@ -166,7 +172,6 @@ is_admin = (password == "wimbledon2026")
 if is_admin:
     st.sidebar.success("Access Granted!")
     
-    # Collapsible Historical Referencing Header
     with st.sidebar.expander("📚 View Previous Historical Scores Reference"):
         for m_id, data in match_scores.items():
             active_ids = [m["id"] for day_fixtures in FIXTURES_BY_DAY.values() for m in day_fixtures]
