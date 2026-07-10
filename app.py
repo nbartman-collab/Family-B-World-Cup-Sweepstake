@@ -23,27 +23,25 @@ FLAG_MAPPING = {
     "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼"
 }
 
-# --- 2. FIXTURES DICTIONARY (Weekend & Upcoming Knockout Phase Schedule) ---
+# --- 2. FIXTURES DICTIONARY (Quarter-Finals & Semi-Finals Schedule) ---
 FIXTURES_BY_DAY = {
-    "Saturday, July 4": [
-        {"id": "m86", "home": "Canada", "away": "Morocco", "time": "22:30"},
-        {"id": "m87", "home": "Paraguay", "away": "France", "time": "02:30 (Sun)"}
+    "Friday, July 10 (Quarter-Finals)": [
+        {"id": "m94", "home": "Morocco", "away": "France", "time": "18:00"},
+        {"id": "m95", "home": "Brazil", "away": "England", "time": "22:00"}
     ],
-    "Sunday, July 5": [
-        {"id": "m88", "home": "Brazil", "away": "Norway", "time": "21:00"},
-        {"id": "m89", "home": "Mexico", "away": "England", "time": "01:00 (Mon)"}
+    "Saturday, July 11 (Quarter-Finals)": [
+        {"id": "m96", "home": "Portugal", "away": "Belgium", "time": "19:00"},
+        {"id": "m97", "home": "Argentina", "away": "Colombia", "time": "23:00"}
     ],
-    "Monday, July 6": [
-        {"id": "m90", "home": "Portugal", "away": "Spain", "time": "23:30"}
+    "Tuesday, July 14 (Semi-Finals)": [
+        {"id": "m98", "home": "Winner M94", "away": "Winner M95", "time": "21:00"}
     ],
-    "Tuesday, July 7": [
-        {"id": "m91", "home": "United States", "away": "Belgium", "time": "04:30 (Wed)"},
-        {"id": "m92", "home": "Argentina", "away": "Egypt", "time": "21:30"},
-        {"id": "m93", "home": "Switzerland", "away": "Colombia", "time": "01:30 (Wed)"}
+    "Wednesday, July 15 (Semi-Finals)": [
+        {"id": "m99", "home": "Winner M96", "away": "Winner M97", "time": "21:00"}
     ]
 }
 
-# --- 3. HARDCODED BASELINE DATA LAYER (Master Records updated with Friday's Scores) ---
+# --- 3. HARDCODED BASELINE DATA LAYER (Master Records Unbroken) ---
 match_scores = {
     "m1": {"home_team": "Mexico", "away_team": "South Africa", "home_score": "2", "away_score": "0"},
     "m2": {"home_team": "South Korea", "away_team": "Czechia", "home_score": "2", "away_score": "1"},
@@ -118,7 +116,6 @@ match_scores = {
     "m68": {"home_team": "Jordan", "away_team": "Argentina", "home_score": "1", "away_score": "3"},
     "m70": {"home_team": "South Africa", "away_team": "Canada", "home_score": "0", "away_score": "1"},
     "m71": {"home_team": "Brazil", "away_team": "Japan", "home_score": "2", "away_score": "1"},
-    # --- FIXED TYPO HERE (Changed away_team to away_score) ---
     "m72": {"home_team": "Germany", "away_team": "Paraguay", "home_score": "1", "away_score": "2"},
     "m73": {"home_team": "Netherlands", "away_team": "Morocco", "home_score": "1", "away_score": "2"},
     "m74": {"home_team": "Ivory Coast", "away_team": "Norway", "home_score": "0", "away_score": "1"},
@@ -135,8 +132,8 @@ match_scores = {
     "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"}
 }
 
-# Advanced backup file container definition to v10 to clear the server cache log
-DB_FILE = "online_sweepstake_v10.json"
+# Advanced index to v11 to cleanly wipe any cached placeholder data on the server
+DB_FILE = "online_sweepstake_v11.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
@@ -168,7 +165,7 @@ is_admin = (password == "wimbledon2026")
 if is_admin:
     st.sidebar.success("Access Granted!")
     
-    # Collapsible Historical Referencing Header (Fixed Safe Fallback Configuration)
+    # Collapsible Historical Referencing Header
     with st.sidebar.expander("📚 View Previous Historical Scores Reference"):
         for m_id, data in match_scores.items():
             active_ids = [m["id"] for day_fixtures in FIXTURES_BY_DAY.values() for m in day_fixtures]
