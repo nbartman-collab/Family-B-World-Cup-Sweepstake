@@ -23,25 +23,17 @@ FLAG_MAPPING = {
     "Portugal": "🇵🇹", "Belgium": "🇧🇪", "Switzerland": "🇨🇭", "South Korea": "🇰🇷", "Austria": "🇦🇹", "Tunisia": "🇹🇳", "Saudi Arabia": "🇸🇦", "Curaçao": "🇨🇼"
 }
 
-# --- 2. FIXTURES DICTIONARY (Corrected Quarter-Finals & Semi-Finals Schedule) ---
+# --- 2. FIXTURES DICTIONARY (Semi-Finals Schedule) ---
 FIXTURES_BY_DAY = {
-    "Friday, July 10 (Quarter-Finals)": [
-        {"id": "m94", "home": "Morocco", "away": "France", "time": "18:00"},
-        {"id": "m95", "home": "Norway", "away": "England", "time": "22:00"}  # Corrected to Norway
-    ],
-    "Saturday, July 11 (Quarter-Finals)": [
-        {"id": "m96", "home": "Spain", "away": "Belgium", "time": "19:00"},
-        {"id": "m97", "home": "Argentina", "away": "Switzerland", "time": "23:00"}
-    ],
     "Tuesday, July 14 (Semi-Finals)": [
-        {"id": "m98", "home": "Winner M94", "away": "Winner M95", "time": "21:00"}
+        {"id": "m98", "home": "France", "away": "Spain", "time": "21:00"}
     ],
     "Wednesday, July 15 (Semi-Finals)": [
-        {"id": "m99", "home": "Winner M96", "away": "Winner M97", "time": "21:00"}
+        {"id": "m99", "home": "Argentina", "away": "England", "time": "21:00"}
     ]
 }
 
-# --- 3. HARDCODED BASELINE DATA LAYER (All Historical Records Up To Date) ---
+# --- 3. HARDCODED BASELINE DATA LAYER (All Matches up to Quarter-Finals Locked) ---
 match_scores = {
     "m1": {"home_team": "Mexico", "away_team": "South Africa", "home_score": "2", "away_score": "0"},
     "m2": {"home_team": "South Korea", "away_team": "Czechia", "home_score": "2", "away_score": "1"},
@@ -132,16 +124,21 @@ match_scores = {
     "m85": {"home_team": "Colombia", "away_team": "Ghana", "home_score": "1", "away_score": "0"},
     "m86": {"home_team": "Canada", "away_team": "Morocco", "home_score": "0", "away_score": "3"},
     "m87": {"home_team": "Paraguay", "away_team": "France", "home_score": "0", "away_score": "1"},
-    "m88": {"home_team": "Norway", "away_team": "Brazil", "home_score": "2", "away_score": "1"},  # Corrected
+    "m88": {"home_team": "Norway", "away_team": "Brazil", "home_score": "2", "away_score": "1"},
     "m89": {"home_team": "Mexico", "away_team": "England", "home_score": "2", "away_score": "3"},
     "m90": {"home_team": "Portugal", "away_team": "Spain", "home_score": "0", "away_score": "1"},
     "m91": {"home_team": "United States", "away_team": "Belgium", "home_score": "1", "away_score": "4"},
     "m92": {"home_team": "Argentina", "away_team": "Egypt", "home_score": "3", "away_score": "2"},
-    "m93": {"home_team": "Switzerland", "away_team": "Colombia", "home_score": "4", "away_score": "3"}
+    "m93": {"home_team": "Switzerland", "away_team": "Colombia", "home_score": "4", "away_score": "3"},
+    # --- ADDED: Quarter-Final Results Locked into Baseline ---
+    "m94": {"home_team": "Morocco", "away_team": "France", "home_score": "0", "away_score": "2"},
+    "m95": {"home_team": "Norway", "away_team": "England", "home_score": "1", "away_score": "2"},
+    "m96": {"home_team": "Spain", "away_team": "Belgium", "home_score": "2", "away_score": "1"},
+    "m97": {"home_team": "Argentina", "away_team": "Switzerland", "home_score": "3", "away_score": "1"}
 }
 
-# Version v15 rolls over file container cleanly to prevent web cache retention
-DB_FILE = "online_sweepstake_v15.json"
+# Version v16 cleanly resets browser/server-side caches for the next phase
+DB_FILE = "online_sweepstake_v16.json"
 
 def load_global_scores():
     if os.path.exists(DB_FILE):
